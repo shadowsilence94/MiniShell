@@ -12,56 +12,67 @@
 
 #include "minishell.h"
 
-static char	*copy_expanded(char *val, char *status_str, int len)
+static char	*get_var_name(char *val, int *i)
 {
-	char	*new_val;
-	int		i;
-	int		j;
+	int		start;
+	char	*name;
 
-	new_val = (char *)malloc(len + 1);
-	if (!new_val)
-		return (NULL);
-	i = 0;
-	j = 0;
-	while (val[i])
+	start = ++(*i);
+	if (val[*i] == '?')
 	{
-		if (val[i] == '$' && val[i + 1] == '?')
-		{
-			ft_strlcpy(new_val + j, status_str, ft_strlen(status_str) + 1);
-			j += ft_strlen(status_str);
-			i += 2;
-		}
-		else
-			new_val[j++] = val[i++];
+		(*i)++;
+		return (ft_strdup("?"));
 	}
-	new_val[j] = '\0';
-	return (new_val);
+	while (val[*i] && (ft_isalnum(val[*i]) || val[*i] == '_'))
+		(*i)++;
+	name = ft_substr(val, start, *i - start);
+	return (name);
 }
 
-char	*expand_status(char *val, int last_status)
+static char	*get_var_value(char *name, char **envp, int last_status)
 {
-	char	*status_str;
-	char	*new_val;
-	int		len;
+	char	*val;
+
+	if (ft_strncmp(name, "?", 2) == 0)
+		return (ft_itoa(last_status));
+	val = get_env_value(envp, name);
+	if (val)
+		return (ft_strdup(val));
+	return (ft_strdup(""));
+}
+
+char	*expand_status(char *val, int last_status, char **envp)
+{
+	char	*res;
+	char	*name;
+	char	*var_val;
+	char	*tmp;
 	int		i;
 
-	status_str = ft_itoa(last_status);
-	len = 0;
+	res = ft_strdup("");
 	i = 0;
 	while (val[i])
 	{
-		if (val[i] == '$' && val[i + 1] == '?')
+		if (val[i] == '$' && val[i+1])
 		{
-			len += ft_strlen(status_str);
-			i += 2;
+			name = get_var_name(val, &i);
+			var_val = get_var_value(name, envp, last_status);
+			tmp = ft_strjoin(res, var_val);
+			free(res);
+			res = tmp;
+			free(name);
+			free(var_val);
 		}
 		else
 		{
-			len++;
-			i++;
+			tmp = (char *)malloc(2);
+			tmp[0] = val[i++];
+			tmp[1] = '\0';
+			char *new_res = ft_strjoin(res, tmp);
+			free(res);
+			res = new_res;
+			free(tmp);
 		}
 	}
-	new_val = copy_expanded(val, status_str, len);
-	free(status_str);
-	return (new_val);
+	return (res);
 }

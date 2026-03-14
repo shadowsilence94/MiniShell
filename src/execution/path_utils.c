@@ -12,21 +12,7 @@
 
 #include "minishell.h"
 
-char	*get_env_value(char **envp, char *key)
-{
-	int	i;
-	int	key_len;
 
-	i = 0;
-	key_len = ft_strlen(key);
-	while (envp[i])
-	{
-		if (ft_strncmp(envp[i], key, key_len) == 0 && envp[i][key_len] == '=')
-			return (envp[i] + key_len + 1);
-		i++;
-	}
-	return (NULL);
-}
 
 static char	*try_paths(char **paths, char *cmd)
 {

@@ -33,7 +33,8 @@ int	get_word_end(char *line, int i)
 	return (i);
 }
 
-int	handle_word(char *line, int i, t_token **head, int last_status)
+int	handle_word(char *line, int i, t_token **head, int last_status,
+	char **envp)
 {
 	int		end;
 	char	*word;
@@ -41,7 +42,7 @@ int	handle_word(char *line, int i, t_token **head, int last_status)
 
 	end = get_word_end(line, i);
 	word = ft_substr(line, i, end - i);
-	expanded = expand_status(word, last_status);
+	expanded = expand_status(word, last_status, envp);
 	append_token(head, new_token(expanded, TOKEN_WORD));
 	free(word);
 	return (end);

@@ -42,9 +42,9 @@ int	execute_builtin(t_command *cmd, char ***envp, int *last_status)
 	if (ft_strncmp(cmd->args[0], "pwd", 4) == 0)
 		return (ft_pwd());
 	if (ft_strncmp(cmd->args[0], "export", 7) == 0)
-		return (0);
+		return (ft_export(cmd->args, envp));
 	if (ft_strncmp(cmd->args[0], "unset", 6) == 0)
-		return (0);
+		return (ft_unset(cmd->args, envp));
 	if (ft_strncmp(cmd->args[0], "env", 4) == 0)
 		return (ft_env(*envp));
 	if (ft_strncmp(cmd->args[0], "exit", 5) == 0)

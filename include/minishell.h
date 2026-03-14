@@ -93,18 +93,19 @@ typedef struct s_command
 /*
  * Parsing & Lexing
  */
-t_token		*tokenize(char *line, int last_status);
+t_token		*tokenize(char *line, int last_status, char **envp);
 t_command	*parse_input(char *line, char **envp, int *last_status);
 int			is_whitespace(char c);
 t_token		*new_token(char *value, t_token_type type);
 void		append_token(t_token **head, t_token *new_t);
-char		*expand_status(char *val, int last_status);
+char		*expand_status(char *val, int last_status, char **envp);
 t_command	*new_command(void);
 void		add_argument(t_command *cmd, char *arg);
 void		add_redirection(t_command *cmd, t_token *token,
 				t_token *file_token);
 int			get_word_end(char *line, int i);
-int			handle_word(char *line, int i, t_token **head, int last_status);
+int			handle_word(char *line, int i, t_token **head, int last_status,
+				char **envp);
 
 /*
  * Execution
@@ -127,6 +128,8 @@ int			ft_echo(char **args);
 int			ft_pwd(void);
 int			ft_cd(char **args, char ***envp);
 int			ft_env(char **envp);
+int			ft_export(char **args, char ***envp);
+int			ft_unset(char **args, char ***envp);
 int			ft_exit(char **args, int *last_status);
 int			is_all_digits(char *str);
 long long	ft_atoll(const char *str);
@@ -136,6 +139,14 @@ long long	ft_atoll(const char *str);
  */
 void		free_command_list(t_command *cmd_list);
 void		free_split(char **split);
+
+/*
+ * Environment Utilities
+ */
+char		**copy_env(char **envp);
+char		*get_env_value(char **envp, char *key);
+void		set_env(char ***envp, char *key, char *value);
+void		increment_shlvl(char ***envp);
 
 /*
  * Signals

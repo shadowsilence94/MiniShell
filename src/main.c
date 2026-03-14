@@ -80,9 +80,11 @@ int	main(int argc, char **argv, char **envp)
 
 	(void)argc;
 	(void)argv;
-	env_vars = envp;
+	env_vars = copy_env(envp);
+	increment_shlvl(&env_vars);
 	last_status = 0;
 	setup_signals();
+	rl_bind_key('\t', rl_complete);
 	while (1)
 	{
 		line = readline(PROMPT);
@@ -95,5 +97,6 @@ int	main(int argc, char **argv, char **envp)
 		free(line);
 	}
 	rl_clear_history();
+	free_split(env_vars);
 	return (0);
 }

@@ -94,7 +94,7 @@ t_command	*parse_input(char *line, char **envp, int *last_status)
 	t_command	*curr;
 
 	(void)envp;
-	tokens = tokenize(line, *last_status);
+	tokens = tokenize(line, *last_status, envp);
 	if (!tokens)
 		return (NULL);
 	head = new_command();

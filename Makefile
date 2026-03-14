@@ -36,6 +36,7 @@ SRC_FILES   = main.c \
 			execution/builtin_executor.c \
 			builtins/builtins.c \
 			builtins/builtins_utils.c \
+			utils/env_utils.c \
 			signals.c
 
 SRCS        = $(addprefix $(SRC_DIR)/, $(SRC_FILES))

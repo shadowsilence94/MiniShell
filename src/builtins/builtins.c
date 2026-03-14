@@ -52,10 +52,17 @@ int	ft_cd(char **args, char ***envp)
 {
 	char	*path;
 
-	(void)envp;
 	if (!args[1])
-		return (1);
-	path = args[1];
+	{
+		path = get_env_value(*envp, "HOME");
+		if (!path)
+		{
+			ft_putendl_fd("minishell: cd: HOME not set", 2);
+			return (1);
+		}
+	}
+	else
+		path = args[1];
 	if (chdir(path) == -1)
 	{
 		perror("cd");
@@ -71,7 +78,66 @@ int	ft_env(char **envp)
 	i = 0;
 	while (envp[i])
 	{
-		ft_putendl_fd(envp[i], STDOUT_FILENO);
+		if (ft_strchr(envp[i], '='))
+			ft_putendl_fd(envp[i], STDOUT_FILENO);
+		i++;
+	}
+	return (0);
+}
+
+int	ft_export(char **args, char ***envp)
+{
+	int		i;
+	char	*key;
+	char	*value;
+	char	*equal;
+
+	if (!args[1])
+		return (ft_env(*envp));
+	i = 1;
+	while (args[i])
+	{
+		equal = ft_strchr(args[i], '=');
+		if (equal)
+		{
+			key = ft_substr(args[i], 0, equal - args[i]);
+			value = ft_strdup(equal + 1);
+			set_env(envp, key, value);
+			free(key);
+			free(value);
+		}
+		i++;
+	}
+	return (0);
+}
+
+int	ft_unset(char **args, char ***envp)
+{
+	int		i;
+	int		j;
+	int		key_len;
+
+	if (!args[1])
+		return (0);
+	i = 1;
+	while (args[i])
+	{
+		j = 0;
+		key_len = ft_strlen(args[i]);
+		while ((*envp)[j])
+		{
+			if (ft_strncmp((*envp)[j], args[i], key_len) == 0 && (*envp)[j][key_len] == '=')
+			{
+				free((*envp)[j]);
+				while ((*envp)[j])
+				{
+					(*envp)[j] = (*envp)[j + 1];
+					j++;
+				}
+				break ;
+			}
+			j++;
+		}
 		i++;
 	}
 	return (0);

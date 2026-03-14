@@ -48,7 +48,7 @@ int	handle_symbol(char *line, int i, t_token **head)
 	return (i + 1);
 }
 
-t_token	*tokenize(char *line, int last_status, char **envp)
+t_token	*tokenize(char *line, t_exec_params *params)
 {
 	t_token	*head;
 	int		i;
@@ -62,7 +62,7 @@ t_token	*tokenize(char *line, int last_status, char **envp)
 		else if (line[i] == '|' || line[i] == '<' || line[i] == '>')
 			i = handle_symbol(line, i, &head);
 		else
-			i = handle_word(line, i, &head, last_status, envp);
+			i = handle_word(line, i, &head, params);
 	}
 	return (head);
 }

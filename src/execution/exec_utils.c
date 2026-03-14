@@ -46,24 +46,23 @@ static void	run_command(t_command *cmd, char ***envp)
 	exit(1);
 }
 
-void	child_process(t_command *cmd, char ***envp, int prev_fd, int p_fd[2],
-	int *last_status)
+void	child_process(t_command *cmd, t_exec_params *params)
 {
-	if (prev_fd != -1)
+	if (params->prev_fd != -1)
 	{
-		dup2(prev_fd, STDIN_FILENO);
-		close(prev_fd);
+		dup2(params->prev_fd, STDIN_FILENO);
+		close(params->prev_fd);
 	}
-	if (p_fd[1] != -1)
+	if (params->p_fd[1] != -1)
 	{
-		dup2(p_fd[1], STDOUT_FILENO);
-		close(p_fd[1]);
+		dup2(params->p_fd[1], STDOUT_FILENO);
+		close(params->p_fd[1]);
 	}
-	if (p_fd[0] != -1)
-		close(p_fd[0]);
+	if (params->p_fd[0] != -1)
+		close(params->p_fd[0]);
 	if (handle_redirections(cmd))
 		exit(1);
 	if (is_builtin(cmd->args[0]))
-		exit(execute_builtin(cmd, envp, last_status));
-	run_command(cmd, envp);
+		exit(execute_builtin(cmd, params->envp, params->last_status));
+	run_command(cmd, params->envp);
 }

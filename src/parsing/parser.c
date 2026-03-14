@@ -88,13 +88,15 @@ static t_token	*handle_token(t_token *tmp, t_command **curr)
 
 t_command	*parse_input(char *line, char **envp, int *last_status)
 {
-	t_token		*tokens;
-	t_token		*tmp;
-	t_command	*head;
-	t_command	*curr;
+	t_token			*tokens;
+	t_token			*tmp;
+	t_command		*head;
+	t_command		*curr;
+	t_exec_params	params;
 
-	(void)envp;
-	tokens = tokenize(line, *last_status, envp);
+	params.envp = &envp;
+	params.last_status = last_status;
+	tokens = tokenize(line, &params);
 	if (!tokens)
 		return (NULL);
 	head = new_command();

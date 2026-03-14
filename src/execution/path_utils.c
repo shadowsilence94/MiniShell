@@ -12,8 +12,6 @@
 
 #include "minishell.h"
 
-
-
 static char	*try_paths(char **paths, char *cmd)
 {
 	char	*part_path;

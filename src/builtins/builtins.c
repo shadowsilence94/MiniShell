@@ -85,64 +85,6 @@ int	ft_env(char **envp)
 	return (0);
 }
 
-int	ft_export(char **args, char ***envp)
-{
-	int		i;
-	char	*key;
-	char	*value;
-	char	*equal;
-
-	if (!args[1])
-		return (ft_env(*envp));
-	i = 1;
-	while (args[i])
-	{
-		equal = ft_strchr(args[i], '=');
-		if (equal)
-		{
-			key = ft_substr(args[i], 0, equal - args[i]);
-			value = ft_strdup(equal + 1);
-			set_env(envp, key, value);
-			free(key);
-			free(value);
-		}
-		i++;
-	}
-	return (0);
-}
-
-int	ft_unset(char **args, char ***envp)
-{
-	int		i;
-	int		j;
-	int		key_len;
-
-	if (!args[1])
-		return (0);
-	i = 1;
-	while (args[i])
-	{
-		j = 0;
-		key_len = ft_strlen(args[i]);
-		while ((*envp)[j])
-		{
-			if (ft_strncmp((*envp)[j], args[i], key_len) == 0 && (*envp)[j][key_len] == '=')
-			{
-				free((*envp)[j]);
-				while ((*envp)[j])
-				{
-					(*envp)[j] = (*envp)[j + 1];
-					j++;
-				}
-				break ;
-			}
-			j++;
-		}
-		i++;
-	}
-	return (0);
-}
-
 int	ft_exit(char **args, int *last_status)
 {
 	int	code;

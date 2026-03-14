@@ -55,6 +55,17 @@ typedef struct s_token
 }	t_token;
 
 /*
+ * Struct for execution parameters
+ */
+typedef struct s_exec_params
+{
+	char	***envp;
+	int		*last_status;
+	int		prev_fd;
+	int		p_fd[2];
+}	t_exec_params;
+
+/*
  * Struct for input file
  */
 typedef struct s_infile
@@ -93,7 +104,7 @@ typedef struct s_command
 /*
  * Parsing & Lexing
  */
-t_token		*tokenize(char *line, int last_status, char **envp);
+t_token		*tokenize(char *line, t_exec_params *params);
 t_command	*parse_input(char *line, char **envp, int *last_status);
 int			is_whitespace(char c);
 t_token		*new_token(char *value, t_token_type type);
@@ -104,8 +115,8 @@ void		add_argument(t_command *cmd, char *arg);
 void		add_redirection(t_command *cmd, t_token *token,
 				t_token *file_token);
 int			get_word_end(char *line, int i);
-int			handle_word(char *line, int i, t_token **head, int last_status,
-				char **envp);
+int			handle_word(char *line, int i, t_token **head,
+				t_exec_params *params);
 
 /*
  * Execution
@@ -118,8 +129,7 @@ int			execute_builtin(t_command *cmd, char ***envp, int *last_status);
 void		run_single_builtin(t_command *cmd, char ***envp, int *last_status);
 int			handle_redirections(t_command *cmd);
 void		wait_for_children(int prev_pipe_fd, int *last_status);
-void		child_process(t_command *cmd, char ***envp, int prev_fd,
-				int pipe_fd[2], int *last_status);
+void		child_process(t_command *cmd, t_exec_params *params);
 
 /*
  * Builtins

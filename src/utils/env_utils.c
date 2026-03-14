@@ -73,7 +73,8 @@ void	set_env(char ***envp, char *key, char *value)
 	new_str = create_env_str(key, value);
 	while ((*envp)[i])
 	{
-		if (ft_strncmp((*envp)[i], key, key_len) == 0 && (*envp)[i][key_len] == '=')
+		if (ft_strncmp((*envp)[i], key, key_len) == 0
+			&& (*envp)[i][key_len] == '=')
 		{
 			free((*envp)[i]);
 			(*envp)[i] = new_str;

@@ -24,33 +24,37 @@ static t_command	*setup_pipe(t_command *cmd, int pipe_fd[2])
 	return (cmd);
 }
 
+static void	cleanup_parent(t_exec_params *p, t_command **cmd)
+{
+	if (p->prev_fd != -1)
+		close(p->prev_fd);
+	if (p->p_fd[1] != -1)
+		close(p->p_fd[1]);
+	p->prev_fd = p->p_fd[0];
+	*cmd = (*cmd)->next;
+}
+
 static void	handle_process_loop(t_command *cmd, char ***envp, int *last_status)
 {
-	int		p_fd[2];
-	int		prev_p_fd;
-	pid_t	pid;
+	t_exec_params	p;
+	pid_t			pid;
 
-	prev_p_fd = -1;
+	p.envp = envp;
+	p.last_status = last_status;
+	p.prev_fd = -1;
 	while (cmd)
 	{
-		if (!setup_pipe(cmd, p_fd))
+		if (!setup_pipe(cmd, p.p_fd))
 			return ;
 		pid = fork();
 		if (pid == -1)
 			return ;
 		if (pid == 0)
-			child_process(cmd, envp, prev_p_fd, p_fd, last_status);
+			child_process(cmd, &p);
 		else
-		{
-			if (prev_p_fd != -1)
-				close(prev_p_fd);
-			if (p_fd[1] != -1)
-				close(p_fd[1]);
-			prev_p_fd = p_fd[0];
-			cmd = cmd->next;
-		}
+			cleanup_parent(&p, &cmd);
 	}
-	wait_for_children(prev_p_fd, last_status);
+	wait_for_children(p.prev_fd, last_status);
 }
 
 void	execute_commands(t_command *cmd, char ***envp, int *last_status)

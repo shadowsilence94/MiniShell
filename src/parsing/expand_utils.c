@@ -41,38 +41,49 @@ static char	*get_var_value(char *name, char **envp, int last_status)
 	return (ft_strdup(""));
 }
 
-char	*expand_status(char *val, int last_status, char **envp)
+static char	*append_char(char *res, char c)
 {
-	char	*res;
+	char	tmp[2];
+	char	*new_res;
+
+	tmp[0] = c;
+	tmp[1] = '\0';
+	new_res = ft_strjoin(res, tmp);
+	free(res);
+	return (new_res);
+}
+
+static char	*handle_expansion(char *res, char *val, int *i, t_exec_params *p)
+{
 	char	*name;
 	char	*var_val;
 	char	*tmp;
-	int		i;
 
+	name = get_var_name(val, i);
+	var_val = get_var_value(name, *p->envp, *p->last_status);
+	tmp = ft_strjoin(res, var_val);
+	free(res);
+	free(name);
+	free(var_val);
+	return (tmp);
+}
+
+char	*expand_status(char *val, int last_status, char **envp)
+{
+	char			*res;
+	int				i;
+	t_exec_params	p;
+
+	p.envp = &envp;
+	p.last_status = &last_status;
 	res = ft_strdup("");
 	i = 0;
 	while (val[i])
 	{
-		if (val[i] == '$' && val[i+1])
-		{
-			name = get_var_name(val, &i);
-			var_val = get_var_value(name, envp, last_status);
-			tmp = ft_strjoin(res, var_val);
-			free(res);
-			res = tmp;
-			free(name);
-			free(var_val);
-		}
+		if (val[i] == '$' && val[i + 1])
+			res = handle_expansion(res, val, &i, &p);
 		else
-		{
-			tmp = (char *)malloc(2);
-			tmp[0] = val[i++];
-			tmp[1] = '\0';
-			char *new_res = ft_strjoin(res, tmp);
-			free(res);
-			res = new_res;
-			free(tmp);
-		}
+			res = append_char(res, val[i++]);
 	}
 	return (res);
 }

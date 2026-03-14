@@ -6,3 +6,5 @@ obj/
 minishell
 *.o
 test_script.sh
+bt
+process

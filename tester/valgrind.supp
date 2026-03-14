@@ -13,33 +13,53 @@
    ...
 }
 {
-   ignore_readline
+   ignore_readline_so
    Memcheck:Leak
    ...
-   obj:*/libreadline.so.*
+   obj:*libreadline*
+}
+{
+   ignore_readline_so2
+   Memcheck:Leak
+   ...
+   obj:*readline*
 }
 {
    grep
    Memcheck:Leak
    ...
-   obj:/usr/bin/grep
+   obj:*/grep
 }
 {
    cat
    Memcheck:Leak
    ...
-   obj:/usr/bin/cat
+   obj:*/cat
 }
 {
    ls
    Memcheck:Leak
    ...
-   obj:/usr/bin/ls
+   obj:*/ls
 }
 {
    unknown
    Memcheck:Leak
    ...
    fun:???
+   ...
+}
+{
+   dlopen
+   Memcheck:Leak
+   ...
+   fun:dlopen*
+   ...
+}
+{
+   rl_initialize
+   Memcheck:Leak
+   ...
+   fun:rl_initialize
    ...
 }

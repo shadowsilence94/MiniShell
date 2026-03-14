@@ -70,20 +70,30 @@ char	*expand_status(char *val, t_exec_params *params)
 	int		i;
 	bool	s_q;
 	bool	d_q;
+	bool	seen_quote;
 
 	res = ft_strdup("");
 	i = 0;
 	s_q = false;
 	d_q = false;
+	seen_quote = false;
 	while (val && val[i])
 	{
 		if ((val[i] == '\'' && !d_q) || (val[i] == '"' && !s_q))
+		{
+			seen_quote = true;
 			toggle_quotes(val[i++], &s_q, &d_q);
+		}
 		else if (val[i] == '$' && !s_q && val[i + 1] && \
 (ft_isalnum(val[i + 1]) || val[i + 1] == '_' || val[i + 1] == '?'))
 			res = handle_expansion(res, val, &i, params);
 		else
 			res = append_char(res, val[i++]);
+	}
+	if (res[0] == '\0' && !seen_quote)
+	{
+		free(res);
+		return (NULL);
 	}
 	return (res);
 }

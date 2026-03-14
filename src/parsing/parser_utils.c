@@ -74,6 +74,8 @@ void	free_command_list(t_command *cmd)
 			free_split(cmd->args);
 		if (cmd->redirs)
 			free_redirs(cmd->redirs);
+		if (cmd->sub_cmd)
+			free_command_list(cmd->sub_cmd);
 		free(cmd);
 		cmd = tmp;
 	}

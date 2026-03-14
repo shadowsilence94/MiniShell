@@ -36,9 +36,29 @@ static int	handle_red_out(char *line, int i, t_token **head)
 
 int	handle_symbol(char *line, int i, t_token **head)
 {
+	if (line[i] == '|' && line[i + 1] == '|')
+	{
+		append_token(head, new_token(ft_strdup("||"), TOKEN_OR));
+		return (i + 2);
+	}
+	if (line[i] == '&' && line[i + 1] == '&')
+	{
+		append_token(head, new_token(ft_strdup("&&"), TOKEN_AND));
+		return (i + 2);
+	}
 	if (line[i] == '|')
 	{
 		append_token(head, new_token(ft_strdup("|"), TOKEN_PIPE));
+		return (i + 1);
+	}
+	if (line[i] == '(')
+	{
+		append_token(head, new_token(ft_strdup("("), TOKEN_L_PAREN));
+		return (i + 1);
+	}
+	if (line[i] == ')')
+	{
+		append_token(head, new_token(ft_strdup(")"), TOKEN_R_PAREN));
 		return (i + 1);
 	}
 	if (line[i] == '<')

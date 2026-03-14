@@ -44,6 +44,10 @@ typedef enum s_token_type
 	TOKEN_REDIRECT_OUT,
 	TOKEN_APPEND,
 	TOKEN_HEREDOC,
+	TOKEN_AND,
+	TOKEN_OR,
+	TOKEN_L_PAREN,
+	TOKEN_R_PAREN,
 	TOKEN_EOF
 }	t_token_type;
 
@@ -80,6 +84,13 @@ typedef struct s_redir
 	struct s_redir	*next;
 }	t_redir;
 
+typedef enum e_logical_op
+{
+	LOGIC_NONE,
+	LOGIC_AND,
+	LOGIC_OR
+}	t_logical_op;
+
 /*
  * Struct for command node
  */
@@ -90,6 +101,8 @@ typedef struct s_command
 	t_redir				*redirs;
 	int					fd_in;
 	int					fd_out;
+	t_logical_op		logic;
+	struct s_command	*sub_cmd;
 	struct s_command	*next;
 	struct s_command	*prev;
 }	t_command;
@@ -111,6 +124,8 @@ void		add_redirection(t_command *cmd, t_token *token,
 int			get_word_end(char *line, int i);
 int			handle_word(char *line, int i, t_token **head,
 				t_exec_params *params);
+t_token		*expand_wildcard(char *pattern);
+int			has_unquoted_wildcard(char *str);
 
 /*
  * Execution

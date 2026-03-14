@@ -42,7 +42,16 @@ int	handle_word(char *line, int i, t_token **head, t_exec_params *params)
 	end = get_word_end(line, i);
 	word = ft_substr(line, i, end - i);
 	expanded = expand_status(word, params);
-	append_token(head, new_token(expanded, TOKEN_WORD));
+	if (expanded)
+	{
+		if (has_unquoted_wildcard(word))
+		{
+			append_token(head, expand_wildcard(expanded));
+			free(expanded);
+		}
+		else
+			append_token(head, new_token(expanded, TOKEN_WORD));
+	}
 	free(word);
 	return (end);
 }

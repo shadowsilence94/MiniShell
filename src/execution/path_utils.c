@@ -59,9 +59,6 @@ char	*find_command_path(char *cmd, char **envp)
 	char	*path_env;
 	char	*res;
 
-	res = handle_absolute_path(cmd);
-	if (res)
-		return (res);
 	path_env = get_env_value(envp, "PATH");
 	if (!path_env)
 		return (NULL);

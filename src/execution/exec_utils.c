@@ -47,16 +47,33 @@ static void	run_command(t_command *cmd, char ***envp)
 		exit(0);
 	if (cmd->args[0][0] == '\0')
 		cmd_not_found("");
-	if (ft_strchr(cmd->args[0], '/') && is_dir(cmd->args[0]))
+	if (ft_strchr(cmd->args[0], '/'))
 	{
-		ft_putstr_fd("minishell: ", 2);
-		ft_putstr_fd(cmd->args[0], 2);
-		ft_putendl_fd(": is a directory", 2);
-		exit(126);
+		if (access(cmd->args[0], F_OK) == -1)
+		{
+			perror(cmd->args[0]);
+			exit(127);
+		}
+		if (is_dir(cmd->args[0]))
+		{
+			ft_putstr_fd("minishell: ", 2);
+			ft_putstr_fd(cmd->args[0], 2);
+			ft_putendl_fd(": is a directory", 2);
+			exit(126);
+		}
+		if (access(cmd->args[0], X_OK) == -1)
+		{
+			perror(cmd->args[0]);
+			exit(126);
+		}
+		path = ft_strdup(cmd->args[0]);
 	}
-	path = find_command_path(cmd->args[0], *envp);
-	if (!path)
-		cmd_not_found(cmd->args[0]);
+	else
+	{
+		path = find_command_path(cmd->args[0], *envp);
+		if (!path)
+			cmd_not_found(cmd->args[0]);
+	}
 	execve(path, cmd->args, *envp);
 	perror("execve");
 	exit(1);
@@ -78,6 +95,11 @@ void	child_process(t_command *cmd, t_exec_params *params)
 		close(params->p_fd[0]);
 	if (handle_redirections(cmd))
 		exit(1);
+	if (cmd->sub_cmd)
+	{
+		execute_commands(cmd->sub_cmd, params->envp, params->last_status);
+		exit(*(params->last_status));
+	}
 	if (cmd->args && is_builtin(cmd->args[0]))
 		exit(execute_builtin(cmd, params->envp, params->last_status));
 	if (cmd->args)

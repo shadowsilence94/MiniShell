@@ -43,13 +43,31 @@ void	free_split(char **split)
 	free(split);
 }
 
+static char	*try_paths(char **paths, char *cmd)
+{
+	char	*part_path;
+	char	*full_path;
+	int		i;
+
+	i = 0;
+	while (paths[i])
+	{
+		part_path = ft_strjoin(paths[i], "/");
+		full_path = ft_strjoin(part_path, cmd);
+		free(part_path);
+		if (access(full_path, X_OK) == 0)
+			return (full_path);
+		free(full_path);
+		i++;
+	}
+	return (NULL);
+}
+
 char	*find_command_path(char *cmd, char **envp)
 {
 	char	**paths;
 	char	*path_env;
-	char	*part_path;
-	char	*full_path;
-	int		i;
+	char	*res;
 
 	if (ft_strchr(cmd, '/'))
 	{
@@ -61,20 +79,8 @@ char	*find_command_path(char *cmd, char **envp)
 	if (!path_env)
 		return (NULL);
 	paths = ft_split(path_env, ':');
-	i = 0;
-	while (paths[i])
-	{
-		part_path = ft_strjoin(paths[i], "/");
-		full_path = ft_strjoin(part_path, cmd);
-		free(part_path);
-		if (access(full_path, X_OK) == 0)
-		{
-			free_split(paths);
-			return (full_path);
-		}
-		free(full_path);
-		i++;
-	}
+	res = try_paths(paths, cmd);
 	free_split(paths);
-	return (NULL);
+	return (res);
 }
+

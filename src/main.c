@@ -3,7 +3,7 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: antigravity <antigravity@student.42.fr>    +#+  +:+       +#+         */
+/*   By: antigravity <antigravity@student.42.fr>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/26 12:00:00 by antigravity       #+#    #+#             */
 /*   Updated: 2025/12/26 12:00:00 by antigravity      ###   ########.fr       */
@@ -20,8 +20,8 @@ volatile sig_atomic_t	g_signal_received = 0;
 void	print_commands(t_command *cmd)
 {
 	int	i;
-	t_infile *in;
-	t_outfile *out;
+	t_infile	*in;
+	t_outfile	*out;
 
 	while (cmd)
 	{

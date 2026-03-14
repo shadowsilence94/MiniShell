@@ -49,23 +49,15 @@ void	append_token(t_token **head, t_token *new_t)
 	tmp->next = new_t;
 }
 
-char	*expand_status(char *val, int last_status)
+static char	*copy_expanded(char *val, char *status_str, int len)
 {
 	char	*new_val;
-	char	*status_str;
 	int		i;
 	int		j;
-	int		len;
 
-	if (!ft_strnstr(val, "$?", ft_strlen(val)))
-		return (val);
-	status_str = ft_itoa(last_status);
-	if (!status_str)
-		return (val);
-	len = ft_strlen(val) + ft_strlen(status_str) - 2;
 	new_val = (char *)malloc(len + 1);
 	if (!new_val)
-		return (val);
+		return (NULL);
 	i = 0;
 	j = 0;
 	while (val[i])
@@ -80,10 +72,29 @@ char	*expand_status(char *val, int last_status)
 			new_val[j++] = val[i++];
 	}
 	new_val[j] = '\0';
+	return (new_val);
+}
+
+char	*expand_status(char *val, int last_status)
+{
+	char	*new_val;
+	char	*status_str;
+	int		len;
+
+	if (!ft_strnstr(val, "$?", ft_strlen(val)))
+		return (val);
+	status_str = ft_itoa(last_status);
+	if (!status_str)
+		return (val);
+	len = ft_strlen(val) + ft_strlen(status_str) - 2;
+	new_val = copy_expanded(val, status_str, len);
 	free(status_str);
+	if (!new_val)
+		return (val);
 	free(val);
 	return (new_val);
 }
+
 
 /*
  * Handle words (including quoted strings)

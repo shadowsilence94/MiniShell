@@ -142,9 +142,9 @@ t_command	*parse_input(char *line, char **envp, int *last_status)
 			else
 			{
 				printf("minishell: syntax error near unexpected token\n");
-				// TODO: Handle error properly
 				return (NULL);
 			}
+
 		}
 		tmp = tmp->next;
 	}

@@ -80,15 +80,16 @@ typedef struct s_outfile
  */
 typedef struct s_command
 {
-	char				**args;         /* Command and arguments */
-	char				*cmd_path;      /* Path to executable */
-	t_infile			*infiles;       /* List of input redirections */
-	t_outfile			*outfiles;      /* List of output redirections */
-	int					fd_in;          /* Final input fd */
-	int					fd_out;         /* Final output fd */
-	struct s_command	*next;          /* Next command in pipe */
-	struct s_command	*prev;          /* Previous command in pipe */
+	char				**args;
+	char				*cmd_path;
+	t_infile			*infiles;
+	t_outfile			*outfiles;
+	int					fd_in;
+	int					fd_out;
+	struct s_command	*next;
+	struct s_command	*prev;
 }	t_command;
+
 
 /*
  * Parsing & Lexing

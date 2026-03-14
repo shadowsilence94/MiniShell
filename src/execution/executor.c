@@ -23,7 +23,6 @@ int	handle_redirections(t_command *cmd)
 	{
 		if (in->is_heredoc)
 		{
-			/* TODO: Implement heredoc */
 		}
 		else
 		{
@@ -92,7 +91,6 @@ int	execute_builtin(t_command *cmd, char ***envp, int *last_status)
 		return (ft_env(*envp));
 	if (ft_strncmp(cmd->args[0], "exit", 5) == 0)
 		return (ft_exit(cmd->args, last_status));
-	/* TODO: export/unset */
 	return (0);
 }
 
@@ -165,27 +163,17 @@ static void	wait_for_children(int prev_pipe_fd, int *last_status)
 	}
 }
 
-void	execute_commands(t_command *cmd, char ***envp, int *last_status)
+static void	handle_process_loop(t_command *cmd, char ***envp, int *last_status)
 {
 	int		pipe_fd[2];
 	int		prev_pipe_fd;
 	pid_t	pid;
 
 	prev_pipe_fd = -1;
-	if (!cmd->next && cmd->args && cmd->args[0]
-		&& (ft_strncmp(cmd->args[0], "cd", 3) == 0
-			|| ft_strncmp(cmd->args[0], "exit", 5) == 0))
-	{
-		run_single_builtin(cmd, envp, last_status);
-		return ;
-	}
 	while (cmd)
 	{
 		if (cmd->next && pipe(pipe_fd) == -1)
-		{
-			perror("pipe");
 			return ;
-		}
 		else if (!cmd->next)
 		{
 			pipe_fd[0] = -1;
@@ -193,10 +181,7 @@ void	execute_commands(t_command *cmd, char ***envp, int *last_status)
 		}
 		pid = fork();
 		if (pid == -1)
-		{
-			perror("fork");
 			return ;
-		}
 		if (pid == 0)
 			child_process(cmd, envp, prev_pipe_fd, pipe_fd, last_status);
 		else
@@ -211,3 +196,16 @@ void	execute_commands(t_command *cmd, char ***envp, int *last_status)
 	}
 	wait_for_children(prev_pipe_fd, last_status);
 }
+
+void	execute_commands(t_command *cmd, char ***envp, int *last_status)
+{
+	if (!cmd->next && cmd->args && cmd->args[0]
+		&& (ft_strncmp(cmd->args[0], "cd", 3) == 0
+			|| ft_strncmp(cmd->args[0], "exit", 5) == 0))
+	{
+		run_single_builtin(cmd, envp, last_status);
+		return ;
+	}
+	handle_process_loop(cmd, envp, last_status);
+}
+

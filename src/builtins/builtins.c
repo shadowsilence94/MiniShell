@@ -52,13 +52,10 @@ int	ft_cd(char **args, char ***envp)
 {
 	char	*path;
 
-	(void)envp; // TODO: Update PWD/OLDPWD in env
+	(void)envp;
 	if (!args[1])
 	{
-		// TODO: invalid connection to HOME env variable
-		// path = get_env_value(*envp, "HOME"); 
-		// For consistency with simplistic shell, assuming HOME is not handled or handled simply
-		return (1); 
+		return (1);
 	}
 	else
 		path = args[1];
@@ -104,7 +101,6 @@ static int	is_all_digits(char *str)
 		if (!ft_isdigit(str[i]))
 			return (0);
 		res = res * 10 + (str[i++] - '0');
-		// LLONG_MAX is 9223372036854775807
 		if ((sign == 1 && res > 9223372036854775807ULL)
 			|| (sign == -1 && res > 9223372036854775808ULL))
 			return (0);

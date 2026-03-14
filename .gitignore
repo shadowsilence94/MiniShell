@@ -1,0 +1,7 @@
+instruction.txt
+README_MM.md
+TEST_COMMANDS.md
+.DS_Store
+obj/
+minishell
+*.o

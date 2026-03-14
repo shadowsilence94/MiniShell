@@ -1,8 +1,10 @@
 &
 &&
+(
 *
 a.out
 bash.supp
+bash_outfiles
 bonus
 bonus_bonus
 builtins
@@ -10,14 +12,18 @@ correct
 crazy
 errors
 extras
+f1
+f1 1233
 f1 f2 f3
 local.supp
 loop.out
 lsvicxptrvLITERAL*plain*****vicxptrvaaa:
 manual_tests
+mini_outfiles
 não
 os_specific
 outfile01
+outfiles
 parsing
 pipes
 printer

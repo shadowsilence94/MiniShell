@@ -118,6 +118,7 @@ int			is_whitespace(char c);
 t_token		*new_token(char *value, t_token_type type);
 void		append_token(t_token **head, t_token *new_t);
 void		free_tokens(t_token *tokens);
+int			print_err(char *token);
 char		*expand_status(char *val, t_exec_params *params);
 t_command	*new_command(void);
 void		add_argument(t_command *cmd, char *arg);

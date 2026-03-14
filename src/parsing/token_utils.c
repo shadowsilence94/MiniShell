@@ -64,3 +64,11 @@ char	*append_char(char *res, char c)
 	free(res);
 	return (new_res);
 }
+
+int	print_err(char *token)
+{
+	ft_putstr_fd("minishell: syntax error near unexpected token `", 2);
+	ft_putstr_fd(token, 2);
+	ft_putendl_fd("'", 2);
+	return (1);
+}

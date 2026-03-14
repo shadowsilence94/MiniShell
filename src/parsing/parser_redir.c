@@ -14,55 +14,65 @@
 
 static int	check_redir_syntax(t_token *tmp)
 {
-	if (tmp->type >= TOKEN_REDIRECT_IN && tmp->type <= TOKEN_APPEND)
+	if (tmp->type >= TOKEN_REDIRECT_IN && tmp->type <= TOKEN_HEREDOC)
 	{
 		if (!tmp->next || tmp->next->type != TOKEN_WORD)
 		{
-			ft_putendl_fd("minishell: syntax error near redirection", 2);
-			return (1);
+			if (tmp->next)
+				return (print_err(tmp->next->value));
+			return (print_err("newline"));
 		}
 	}
 	return (0);
 }
 
-static int	print_err(char *token)
+static int	is_logic_op(t_token_type type)
 {
-	ft_putstr_fd("minishell: syntax error near unexpected token `", 2);
-	ft_putstr_fd(token, 2);
-	ft_putendl_fd("'", 2);
-	return (1);
+	return (type == TOKEN_PIPE || type == TOKEN_AND || type == TOKEN_OR);
+}
+
+static int	check_parens_and_logic(t_token *tmp, int *parens)
+{
+	if (tmp->type == TOKEN_L_PAREN)
+	{
+		(*parens)++;
+		if (tmp->next && tmp->next->type == TOKEN_R_PAREN)
+			return (print_err(")"));
+	}
+	else if (tmp->type == TOKEN_R_PAREN)
+		(*parens)--;
+	if (*parens < 0)
+		return (print_err(")"));
+	if (is_logic_op(tmp->type) && (!tmp->next || is_logic_op(tmp->next->type)))
+	{
+		if (!tmp->next)
+			return (print_err("newline"));
+		return (print_err(tmp->next->value));
+	}
+	return (0);
 }
 
 int	validate_syntax(t_token *tokens)
 {
 	t_token	*tmp;
+	int		parens;
 
+	parens = 0;
 	if (!tokens)
 		return (0);
-	if (tokens->type == TOKEN_PIPE)
-		return (print_err("|"));
+	if (is_logic_op(tokens->type) || tokens->type == TOKEN_R_PAREN)
+		return (print_err(tokens->value));
 	tmp = tokens;
 	while (tmp)
 	{
-		if (tmp->type == TOKEN_PIPE && (!tmp->next
-				|| tmp->next->type == TOKEN_PIPE))
-			return (print_err("|"));
+		if (check_parens_and_logic(tmp, &parens))
+			return (1);
 		if (check_redir_syntax(tmp))
 			return (1);
 		tmp = tmp->next;
 	}
-	return (0);
-}
-
-static t_redir_type	get_redir_type(t_token_type type)
-{
-	if (type == TOKEN_REDIRECT_IN)
-		return (REDIR_IN);
-	if (type == TOKEN_REDIRECT_OUT)
-		return (REDIR_OUT);
-	if (type == TOKEN_APPEND)
-		return (REDIR_APPEND);
-	return (REDIR_HEREDOC);
+	if (parens > 0)
+		return (print_err("newline"));
 }
 
 void	add_redirection(t_command *cmd, t_token *token, t_token *file_token)
@@ -73,7 +83,7 @@ void	add_redirection(t_command *cmd, t_token *token, t_token *file_token)
 	redir = (t_redir *)malloc(sizeof(t_redir));
 	if (!redir)
 		return ;
-	redir->type = get_redir_type(token->type);
+	redir->type = (t_redir_type)(token->type - TOKEN_REDIRECT_IN);
 	redir->filename = ft_strdup(file_token->value);
 	redir->next = NULL;
 	if (!cmd->redirs)

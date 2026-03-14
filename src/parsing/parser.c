@@ -52,6 +52,7 @@ static t_token	*init_parse(char *line, char **envp, int *last_status)
 	if (validate_syntax(tokens))
 	{
 		*last_status = 2;
+		free_tokens(tokens);
 		return (NULL);
 	}
 	return (tokens);

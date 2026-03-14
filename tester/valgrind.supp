@@ -16,7 +16,7 @@
    ignore_readline
    Memcheck:Leak
    ...
-   obj:/usr/lib/x86_64-linux-gnu/libreadline.so.*
+   obj:*/libreadline.so.*
 }
 {
    grep

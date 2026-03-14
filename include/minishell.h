@@ -99,6 +99,7 @@ typedef struct s_command
  */
 t_token		*tokenize(char *line, t_exec_params *params);
 t_command	*parse_input(char *line, char **envp, int *last_status);
+int			validate_syntax(t_token *tokens);
 int			is_whitespace(char c);
 t_token		*new_token(char *value, t_token_type type);
 void		append_token(t_token **head, t_token *new_t);
@@ -116,6 +117,8 @@ int			handle_word(char *line, int i, t_token **head,
  */
 char		*find_command_path(char *cmd, char **envp);
 void		execute_commands(t_command *cmd_list, char ***envp,
+				int *last_status);
+void		handle_process_loop(t_command *cmd, char ***envp,
 				int *last_status);
 int			is_builtin(char *cmd);
 int			execute_builtin(t_command *cmd, char ***envp, int *last_status);

@@ -26,10 +26,12 @@ SRC_FILES   = main.c \
 			parsing/lexer.c \
 			parsing/lexer_utils.c \
 			parsing/parser.c \
+			parsing/parser_redir.c \
 			parsing/token_utils.c \
 			parsing/parser_utils.c \
 			parsing/expand_utils.c \
 			execution/executor.c \
+			execution/exec_loop.c \
 			execution/redirection.c \
 			execution/exec_utils.c \
 			execution/path_utils.c \

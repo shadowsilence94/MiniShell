@@ -1,0 +1,88 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   parser_redir.c                                     :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: hko-ko <hko-ko@student.42.fr>              +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/03/14 22:35:00 by hko-ko            #+#    #+#             */
+/*   Updated: 2026/03/14 22:35:00 by hko-ko           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "minishell.h"
+
+static int	check_redir_syntax(t_token *tmp)
+{
+	if (tmp->type >= TOKEN_REDIRECT_IN && tmp->type <= TOKEN_APPEND)
+	{
+		if (!tmp->next || tmp->next->type != TOKEN_WORD)
+		{
+			ft_putendl_fd("minishell: syntax error near redirection", 2);
+			return (1);
+		}
+	}
+	return (0);
+}
+
+static int	print_err(char *token)
+{
+	ft_putstr_fd("minishell: syntax error near unexpected token `", 2);
+	ft_putstr_fd(token, 2);
+	ft_putendl_fd("'", 2);
+	return (1);
+}
+
+int	validate_syntax(t_token *tokens)
+{
+	t_token	*tmp;
+
+	if (!tokens)
+		return (0);
+	if (tokens->type == TOKEN_PIPE)
+		return (print_err("|"));
+	tmp = tokens;
+	while (tmp)
+	{
+		if (tmp->type == TOKEN_PIPE && (!tmp->next
+				|| tmp->next->type == TOKEN_PIPE))
+			return (print_err("|"));
+		if (check_redir_syntax(tmp))
+			return (1);
+		tmp = tmp->next;
+	}
+	return (0);
+}
+
+static t_redir_type	get_redir_type(t_token_type type)
+{
+	if (type == TOKEN_REDIRECT_IN)
+		return (REDIR_IN);
+	if (type == TOKEN_REDIRECT_OUT)
+		return (REDIR_OUT);
+	if (type == TOKEN_APPEND)
+		return (REDIR_APPEND);
+	return (REDIR_HEREDOC);
+}
+
+void	add_redirection(t_command *cmd, t_token *token, t_token *file_token)
+{
+	t_redir	*redir;
+	t_redir	*last;
+
+	redir = (t_redir *)malloc(sizeof(t_redir));
+	if (!redir)
+		return ;
+	redir->type = get_redir_type(token->type);
+	redir->filename = ft_strdup(file_token->value);
+	redir->next = NULL;
+	if (!cmd->redirs)
+		cmd->redirs = redir;
+	else
+	{
+		last = cmd->redirs;
+		while (last->next)
+			last = last->next;
+		last->next = redir;
+	}
+}

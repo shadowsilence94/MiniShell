@@ -33,8 +33,6 @@ static void	run_command(t_command *cmd, char ***envp)
 
 	if (!cmd->args || !cmd->args[0])
 		exit(0);
-	if (is_builtin(cmd->args[0]))
-		exit(0);
 	path = find_command_path(cmd->args[0], *envp);
 	if (!path)
 	{
@@ -48,7 +46,8 @@ static void	run_command(t_command *cmd, char ***envp)
 	exit(1);
 }
 
-void	child_process(t_command *cmd, char ***envp, int prev_fd, int p_fd[2])
+void	child_process(t_command *cmd, char ***envp, int prev_fd, int p_fd[2],
+	int *last_status)
 {
 	if (prev_fd != -1)
 	{
@@ -64,5 +63,7 @@ void	child_process(t_command *cmd, char ***envp, int prev_fd, int p_fd[2])
 		close(p_fd[0]);
 	if (handle_redirections(cmd))
 		exit(1);
+	if (is_builtin(cmd->args[0]))
+		exit(execute_builtin(cmd, envp, last_status));
 	run_command(cmd, envp);
 }

@@ -118,7 +118,7 @@ void		run_single_builtin(t_command *cmd, char ***envp, int *last_status);
 int			handle_redirections(t_command *cmd);
 void		wait_for_children(int prev_pipe_fd, int *last_status);
 void		child_process(t_command *cmd, char ***envp, int prev_fd,
-				int pipe_fd[2]);
+				int pipe_fd[2], int *last_status);
 
 /*
  * Builtins

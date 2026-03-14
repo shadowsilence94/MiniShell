@@ -39,7 +39,7 @@ static void	handle_process_loop(t_command *cmd, char ***envp, int *last_status)
 		if (pid == -1)
 			return ;
 		if (pid == 0)
-			child_process(cmd, envp, prev_p_fd, p_fd);
+			child_process(cmd, envp, prev_p_fd, p_fd, last_status);
 		else
 		{
 			if (prev_p_fd != -1)
@@ -55,9 +55,7 @@ static void	handle_process_loop(t_command *cmd, char ***envp, int *last_status)
 
 void	execute_commands(t_command *cmd, char ***envp, int *last_status)
 {
-	if (!cmd->next && cmd->args && cmd->args[0]
-		&& (ft_strncmp(cmd->args[0], "cd", 3) == 0
-			|| ft_strncmp(cmd->args[0], "exit", 5) == 0))
+	if (!cmd->next && cmd->args && is_builtin(cmd->args[0]))
 	{
 		run_single_builtin(cmd, envp, last_status);
 		return ;

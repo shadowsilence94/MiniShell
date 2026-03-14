@@ -60,33 +60,45 @@ int	has_unquoted_wildcard(char *str)
 	return (0);
 }
 
+static void	get_matches(DIR *dir, char *pattern, char **matches, int *count)
+{
+	struct dirent	*entry;
+
+	entry = readdir(dir);
+	while (entry && *count < 1024)
+	{
+		if (entry->d_name[0] != '.' || pattern[0] == '.')
+		{
+			if (fnmatch(pattern, entry->d_name, 0) == 0)
+			{
+				matches[*count] = ft_strdup(entry->d_name);
+				(*count)++;
+			}
+		}
+		entry = readdir(dir);
+	}
+}
+
 t_token	*expand_wildcard(char *pattern)
 {
-	DIR				*dir;
-	struct dirent	*entry;
-	t_token			*head;
-	char			*matches[1024];
-	int				count;
-	int				i;
+	DIR		*dir;
+	t_token	*head;
+	char	*matches[1024];
+	int		count;
+	int		i;
 
 	count = 0;
 	head = NULL;
 	dir = opendir(".");
 	if (!dir)
 		return (NULL);
-	while ((entry = readdir(dir)) && count < 1024)
-	{
-		if (entry->d_name[0] == '.' && pattern[0] != '.')
-			continue ;
-		if (fnmatch(pattern, entry->d_name, 0) == 0)
-			matches[count++] = ft_strdup(entry->d_name);
-	}
+	get_matches(dir, pattern, matches, &count);
 	closedir(dir);
 	if (count == 0)
 		return (new_token(ft_strdup(pattern), TOKEN_WORD));
 	sort_strings(matches, count);
-	i = 0;
-	while (i < count)
-		append_token(&head, new_token(matches[i++], TOKEN_WORD));
+	i = -1;
+	while (++i < count)
+		append_token(&head, new_token(matches[i], TOKEN_WORD));
 	return (head);
 }

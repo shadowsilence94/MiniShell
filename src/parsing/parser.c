@@ -12,34 +12,31 @@
 
 #include "minishell.h"
 
-static t_token	*handle_token(t_token *tmp, t_command **curr)
+static t_token	*handle_token(t_token *t, t_command **c)
 {
-	if (tmp->type == TOKEN_PIPE || tmp->type == TOKEN_AND || tmp->type == TOKEN_OR)
+	if (t->type == TOKEN_PIPE || t->type == TOKEN_AND || t->type == TOKEN_OR)
 	{
-		if (tmp->type == TOKEN_AND)
-			(*curr)->logic = LOGIC_AND;
-		else if (tmp->type == TOKEN_OR)
-			(*curr)->logic = LOGIC_OR;
-		(*curr)->next = new_command();
-		(*curr)->next->prev = *curr;
-		*curr = (*curr)->next;
+		if (t->type == TOKEN_AND)
+			(*c)->logic = LOGIC_AND;
+		else if (t->type == TOKEN_OR)
+			(*c)->logic = LOGIC_OR;
+		(*c)->next = new_command();
+		(*c)->next->prev = *c;
+		*c = (*c)->next;
 	}
-	else if (tmp->type == TOKEN_WORD)
-		add_argument(*curr, tmp->value);
-	else if (tmp->type >= TOKEN_REDIRECT_IN && tmp->type <= TOKEN_HEREDOC)
+	else if (t->type == TOKEN_WORD)
+		add_argument(*c, t->value);
+	else if (t->type >= TOKEN_REDIRECT_IN && t->type <= TOKEN_HEREDOC)
 	{
-		if (tmp->next && tmp->next->type == TOKEN_WORD)
-		{
-			add_redirection(*curr, tmp, tmp->next);
-			tmp = tmp->next;
-		}
-		else
+		if (!t->next || t->next->type != TOKEN_WORD)
 		{
 			ft_putendl_fd("minishell: syntax error", 2);
 			return (NULL);
 		}
+		add_redirection(*c, t, t->next);
+		return (t->next->next);
 	}
-	return (tmp->next);
+	return (t->next);
 }
 
 static t_token	*init_parse(char *line, char **envp, int *last_status)
@@ -60,19 +57,26 @@ static t_token	*init_parse(char *line, char **envp, int *last_status)
 	return (tokens);
 }
 
-static t_token	*extract_subtokens(t_token *start, t_token *end)
+static t_token	*handle_subshell(t_token *tmp, t_command **curr)
 {
-	t_token	*head;
-	t_token	*curr;
+	int		paren_count;
+	t_token	*sub_start;
+	t_token	*sub_tokens;
 
-	head = NULL;
-	curr = start;
-	while (curr && curr != end)
+	sub_start = tmp->next;
+	paren_count = 1;
+	while (tmp->next && paren_count > 0)
 	{
-		append_token(&head, new_token(ft_strdup(curr->value), curr->type));
-		curr = curr->next;
+		tmp = tmp->next;
+		if (tmp->type == TOKEN_L_PAREN)
+			paren_count++;
+		if (tmp->type == TOKEN_R_PAREN)
+			paren_count--;
 	}
-	return (head);
+	sub_tokens = extract_subtokens(sub_start, tmp);
+	(*curr)->sub_cmd = parse_tokens(sub_tokens);
+	free_tokens(sub_tokens);
+	return (tmp->next);
 }
 
 t_command	*parse_tokens(t_token *tokens)
@@ -80,7 +84,6 @@ t_command	*parse_tokens(t_token *tokens)
 	t_token			*tmp;
 	t_command		*head;
 	t_command		*curr;
-	int				paren_count;
 
 	if (!tokens)
 		return (NULL);
@@ -91,21 +94,12 @@ t_command	*parse_tokens(t_token *tokens)
 	{
 		if (tmp->type == TOKEN_L_PAREN)
 		{
-			t_token *sub_start = tmp->next;
-			paren_count = 1;
-			while (tmp->next && paren_count > 0)
-			{
-				tmp = tmp->next;
-				if (tmp->type == TOKEN_L_PAREN) paren_count++;
-				if (tmp->type == TOKEN_R_PAREN) paren_count--;
-			}
-			t_token *sub_tokens = extract_subtokens(sub_start, tmp);
-			curr->sub_cmd = parse_tokens(sub_tokens);
-			free_tokens(sub_tokens);
-			tmp = tmp->next;
-			if (tmp && (tmp->type == TOKEN_PIPE || tmp->type == TOKEN_AND || tmp->type == TOKEN_OR))
-				continue;
-			if (!tmp) break;
+			tmp = handle_subshell(tmp, &curr);
+			if (tmp && (tmp->type == TOKEN_PIPE || tmp->type == TOKEN_AND
+					|| tmp->type == TOKEN_OR))
+				continue ;
+			if (!tmp)
+				break ;
 		}
 		tmp = handle_token(tmp, &curr);
 		if (!tmp)

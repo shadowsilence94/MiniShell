@@ -34,7 +34,7 @@ static int	handle_red_out(char *line, int i, t_token **head)
 	return (i + 1);
 }
 
-int	handle_symbol(char *line, int i, t_token **head)
+static int	handle_logical_or_paren(char *line, int i, t_token **head)
 {
 	if (line[i] == '|' && line[i + 1] == '|')
 	{
@@ -46,11 +46,6 @@ int	handle_symbol(char *line, int i, t_token **head)
 		append_token(head, new_token(ft_strdup("&&"), TOKEN_AND));
 		return (i + 2);
 	}
-	if (line[i] == '|')
-	{
-		append_token(head, new_token(ft_strdup("|"), TOKEN_PIPE));
-		return (i + 1);
-	}
 	if (line[i] == '(')
 	{
 		append_token(head, new_token(ft_strdup("("), TOKEN_L_PAREN));
@@ -59,6 +54,21 @@ int	handle_symbol(char *line, int i, t_token **head)
 	if (line[i] == ')')
 	{
 		append_token(head, new_token(ft_strdup(")"), TOKEN_R_PAREN));
+		return (i + 1);
+	}
+	return (0);
+}
+
+int	handle_symbol(char *line, int i, t_token **head)
+{
+	int	res;
+
+	res = handle_logical_or_paren(line, i, head);
+	if (res != 0)
+		return (res);
+	if (line[i] == '|')
+	{
+		append_token(head, new_token(ft_strdup("|"), TOKEN_PIPE));
 		return (i + 1);
 	}
 	if (line[i] == '<')
@@ -79,7 +89,7 @@ t_token	*tokenize(char *line, t_exec_params *params)
 	{
 		if (is_whitespace(line[i]))
 			i++;
-		else if (line[i] == '|' || line[i] == '<' || line[i] == '>')
+		else if (ft_strchr("|&<>()", line[i]))
 			i = handle_symbol(line, i, &head);
 		else
 			i = handle_word(line, i, &head, params);

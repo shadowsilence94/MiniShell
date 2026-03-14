@@ -52,3 +52,15 @@ void	free_tokens(t_token *tokens)
 		tokens = tmp;
 	}
 }
+
+char	*append_char(char *res, char c)
+{
+	char	tmp[2];
+	char	*new_res;
+
+	tmp[0] = c;
+	tmp[1] = '\0';
+	new_res = ft_strjoin(res, tmp);
+	free(res);
+	return (new_res);
+}

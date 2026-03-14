@@ -126,6 +126,7 @@ int			handle_word(char *line, int i, t_token **head,
 				t_exec_params *params);
 t_token		*expand_wildcard(char *pattern);
 int			has_unquoted_wildcard(char *str);
+char		*append_char(char *res, char c);
 
 /*
  * Execution

@@ -55,11 +55,27 @@ static void	handle_single_cmd(t_command *cmd, char ***envp, int *last_status)
 	close(saved_stdin);
 }
 
+static void	execute_command_node(t_command *curr, char ***envp,
+				int *last_status)
+{
+	if (!curr->args && curr->redirs)
+		handle_single_cmd(curr, envp, last_status);
+	else if (curr->args && curr->args[0])
+	{
+		if (handle_assignment(curr, envp, last_status))
+			(void)0;
+		else if (!curr->next && is_builtin(curr->args[0]))
+			handle_single_cmd(curr, envp, last_status);
+		else
+			handle_process_loop(curr, envp, last_status);
+	}
+}
+
 void	execute_commands(t_command *cmd, char ***envp, int *last_status)
 {
 	t_command		*curr;
 	t_command		*next_p;
-	t_command		*stored_next;
+	t_command		*stored;
 	t_logical_op	op;
 
 	curr = cmd;
@@ -68,24 +84,14 @@ void	execute_commands(t_command *cmd, char ***envp, int *last_status)
 		next_p = curr;
 		while (next_p && next_p->logic == LOGIC_NONE && next_p->next)
 			next_p = next_p->next;
-		stored_next = next_p->next;
+		stored = next_p->next;
 		op = next_p->logic;
 		next_p->next = NULL;
-		if (!curr->args && curr->redirs)
-			handle_single_cmd(curr, envp, last_status);
-		else if (curr->args && curr->args[0])
-		{
-			if (handle_assignment(curr, envp, last_status))
-				(void)0;
-			else if (!curr->next && is_builtin(curr->args[0]))
-				handle_single_cmd(curr, envp, last_status);
-			else
-				handle_process_loop(curr, envp, last_status);
-		}
-		next_p->next = stored_next;
+		execute_command_node(curr, envp, last_status);
+		next_p->next = stored;
 		if ((op == LOGIC_AND && *last_status != 0)
 			|| (op == LOGIC_OR && *last_status == 0))
 			break ;
-		curr = stored_next;
+		curr = stored;
 	}
 }

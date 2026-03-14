@@ -39,6 +39,28 @@ static void	cmd_not_found(char *cmd)
 	exit(127);
 }
 
+static char	*handle_abs_rel_path(t_command *cmd)
+{
+	if (access(cmd->args[0], F_OK) == -1)
+	{
+		perror(cmd->args[0]);
+		exit(127);
+	}
+	if (is_dir(cmd->args[0]))
+	{
+		ft_putstr_fd("minishell: ", 2);
+		ft_putstr_fd(cmd->args[0], 2);
+		ft_putendl_fd(": is a directory", 2);
+		exit(126);
+	}
+	if (access(cmd->args[0], X_OK) == -1)
+	{
+		perror(cmd->args[0]);
+		exit(126);
+	}
+	return (ft_strdup(cmd->args[0]));
+}
+
 static void	run_command(t_command *cmd, char ***envp)
 {
 	char	*path;
@@ -48,26 +70,7 @@ static void	run_command(t_command *cmd, char ***envp)
 	if (cmd->args[0][0] == '\0')
 		cmd_not_found("");
 	if (ft_strchr(cmd->args[0], '/'))
-	{
-		if (access(cmd->args[0], F_OK) == -1)
-		{
-			perror(cmd->args[0]);
-			exit(127);
-		}
-		if (is_dir(cmd->args[0]))
-		{
-			ft_putstr_fd("minishell: ", 2);
-			ft_putstr_fd(cmd->args[0], 2);
-			ft_putendl_fd(": is a directory", 2);
-			exit(126);
-		}
-		if (access(cmd->args[0], X_OK) == -1)
-		{
-			perror(cmd->args[0]);
-			exit(126);
-		}
-		path = ft_strdup(cmd->args[0]);
-	}
+		path = handle_abs_rel_path(cmd);
 	else
 	{
 		path = find_command_path(cmd->args[0], *envp);

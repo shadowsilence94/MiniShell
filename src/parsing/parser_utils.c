@@ -3,17 +3,19 @@
 /*                                                        :::      ::::::::   */
 /*   parser_utils.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hko-ko <hko-ko@student.42.fr>               +#+  +:+       +#+        */
+/*   By: hko-ko <hko-ko@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/03/14 16:35:00 by hko-ko           #+#    #+#             */
-/*   Updated: 2026/03/14 16:35:00 by hko-ko           ###   ########.fr       */
+/*   Created: 2025/12/26 12:00:00 by hko-ko            #+#    #+#             */
+/*   Updated: 2025/12/26 12:00:00 by hko-ko           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
 #include "minishell.h"
 
 t_command	*new_command(void)
 {
 	t_command	*cmd;
+
 	cmd = (t_command *)malloc(sizeof(t_command));
 	if (!cmd)
 		return (NULL);
@@ -26,29 +28,37 @@ t_command	*new_command(void)
 void	add_argument(t_command *cmd, char *arg)
 {
 	char	**new_args;
-	int		len;
 	int		i;
-	len = 0;
-	if (cmd->args)
-		while (cmd->args[len])
-			len++;
-	new_args = (char **)malloc(sizeof(char *) * (len + 2));
+
+	i = 0;
+	while (cmd->args && cmd->args[i])
+		i++;
+	new_args = (char **)malloc(sizeof(char *) * (i + 2));
 	if (!new_args)
 		return ;
 	i = 0;
-	if (cmd->args)
+	while (cmd->args && cmd->args[i])
 	{
-		while (cmd->args[i])
-		{
-			new_args[i] = cmd->args[i];
-			i++;
-		}
-
-		free(cmd->args);
+		new_args[i] = cmd->args[i];
+		i++;
 	}
-
 	new_args[i] = ft_strdup(arg);
 	new_args[i + 1] = NULL;
-	cmd->args = (char **)new_args;
+	if (cmd->args)
+		free(cmd->args);
+	cmd->args = new_args;
 }
 
+void	free_commands(t_command *cmd)
+{
+	t_command	*tmp;
+
+	while (cmd)
+	{
+		tmp = cmd->next;
+		if (cmd->args)
+			free_split(cmd->args);
+		free(cmd);
+		cmd = tmp;
+	}
+}

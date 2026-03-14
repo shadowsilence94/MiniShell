@@ -3,12 +3,13 @@
 /*                                                        :::      ::::::::   */
 /*   builtins_utils.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hko-ko <hko-ko@student.42.fr>               +#+  +:+       +#+        */
+/*   By: hko-ko <hko-ko@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/03/14 16:35:00 by hko-ko           #+#    #+#             */
-/*   Updated: 2026/03/14 16:35:00 by hko-ko           ###   ########.fr       */
+/*   Created: 2025/12/26 12:00:00 by hko-ko            #+#    #+#             */
+/*   Updated: 2025/12/26 12:00:00 by hko-ko           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
 #include "minishell.h"
 
 int	is_all_digits(char *str)
@@ -16,6 +17,7 @@ int	is_all_digits(char *str)
 	unsigned long long	res;
 	int					i;
 	int					sign;
+
 	i = 0;
 	res = 0;
 	sign = 1;
@@ -24,7 +26,6 @@ int	is_all_digits(char *str)
 		if (str[i++] == '-')
 			sign = -1;
 	}
-
 	if (!str[i])
 		return (0);
 	while (str[i])
@@ -36,7 +37,6 @@ int	is_all_digits(char *str)
 			|| (sign == -1 && res > 9223372036854775808ULL))
 			return (0);
 	}
-
 	return (1);
 }
 
@@ -45,6 +45,7 @@ long long	ft_atoll(const char *str)
 	unsigned long long	res;
 	int					i;
 	int					sign;
+
 	i = 0;
 	res = 0;
 	sign = 1;
@@ -55,12 +56,9 @@ long long	ft_atoll(const char *str)
 		if (str[i++] == '-')
 			sign = -1;
 	}
-
 	while (str[i] >= '0' && str[i] <= '9')
 	{
 		res = res * 10 + (str[i++] - '0');
 	}
-
 	return ((long long)res * sign);
 }
-

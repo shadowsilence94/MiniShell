@@ -12,16 +12,14 @@
 
 #include "minishell.h"
 
-static int	handle_single_infile(t_infile *in)
+static int	handle_in(t_redir *redir)
 {
 	int	fd;
 
-	if (in->is_heredoc)
-		return (0);
-	fd = open(in->filename, O_RDONLY);
+	fd = open(redir->filename, O_RDONLY);
 	if (fd == -1)
 	{
-		perror(in->filename);
+		perror(redir->filename);
 		return (1);
 	}
 	if (dup2(fd, STDIN_FILENO) == -1)
@@ -33,31 +31,19 @@ static int	handle_single_infile(t_infile *in)
 	return (0);
 }
 
-static int	handle_infiles(t_command *cmd)
-{
-	t_infile	*in;
-
-	in = cmd->infiles;
-	while (in)
-	{
-		if (handle_single_infile(in))
-			return (1);
-		in = in->next;
-	}
-	return (0);
-}
-
-static int	handle_single_outfile(t_outfile *out)
+static int	handle_out(t_redir *redir)
 {
 	int	fd;
+	int	flags;
 
-	if (out->is_append)
-		fd = open(out->filename, O_WRONLY | O_CREAT | O_APPEND, 0644);
+	if (redir->type == REDIR_APPEND)
+		flags = O_WRONLY | O_CREAT | O_APPEND;
 	else
-		fd = open(out->filename, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+		flags = O_WRONLY | O_CREAT | O_TRUNC;
+	fd = open(redir->filename, flags, 0644);
 	if (fd == -1)
 	{
-		perror(out->filename);
+		perror(redir->filename);
 		return (1);
 	}
 	if (dup2(fd, STDOUT_FILENO) == -1)
@@ -69,25 +55,29 @@ static int	handle_single_outfile(t_outfile *out)
 	return (0);
 }
 
-static int	handle_outfiles(t_command *cmd)
-{
-	t_outfile	*out;
-
-	out = cmd->outfiles;
-	while (out)
-	{
-		if (handle_single_outfile(out))
-			return (1);
-		out = out->next;
-	}
-	return (0);
-}
-
 int	handle_redirections(t_command *cmd)
 {
-	if (handle_infiles(cmd))
-		return (1);
-	if (handle_outfiles(cmd))
-		return (1);
+	t_redir	*redir;
+
+	redir = cmd->redirs;
+	while (redir)
+	{
+		if (redir->type == REDIR_IN)
+		{
+			if (handle_in(redir))
+				return (1);
+		}
+		else if (redir->type == REDIR_OUT || redir->type == REDIR_APPEND)
+		{
+			if (handle_out(redir))
+				return (1);
+		}
+		else if (redir->type == REDIR_HEREDOC)
+		{
+			// Heredoc should have been processed before or we handle it here
+			// For now, let's treat it as a special case or implement it
+		}
+		redir = redir->next;
+	}
 	return (0);
 }

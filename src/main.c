@@ -14,48 +14,6 @@
 
 volatile sig_atomic_t	g_signal_received = 0;
 
-static void	print_redirections(t_command *cmd)
-{
-	t_infile	*in;
-	t_outfile	*out;
-
-	in = cmd->infiles;
-	while (in)
-	{
-		printf("  Infile: %s (Heredoc: %d)\n", in->filename, in->is_heredoc);
-		in = in->next;
-	}
-	out = cmd->outfiles;
-	while (out)
-	{
-		printf("  Outfile: %s (Append: %d)\n", out->filename, out->is_append);
-		out = out->next;
-	}
-}
-
-void	print_commands(t_command *cmd)
-{
-	int	i;
-
-	while (cmd)
-	{
-		printf("Command:\n");
-		if (cmd->args)
-		{
-			i = 0;
-			while (cmd->args[i])
-			{
-				printf("  Arg[%d]: %s\n", i, cmd->args[i]);
-				i++;
-			}
-		}
-		print_redirections(cmd);
-		if (cmd->next)
-			printf("  | PIPE |\n");
-		cmd = cmd->next;
-	}
-}
-
 /*
  * Process input line
  */
@@ -69,6 +27,7 @@ void	process_input(char *line, char ***envp, int *last_status)
 	if (cmd_list)
 	{
 		execute_commands(cmd_list, envp, last_status);
+		free_command_list(cmd_list);
 	}
 }
 
@@ -90,7 +49,8 @@ int	main(int argc, char **argv, char **envp)
 		line = readline(PROMPT);
 		if (!line)
 		{
-			printf("exit\n");
+			if (isatty(STDIN_FILENO))
+				printf("exit\n");
 			break ;
 		}
 		process_input(line, &env_vars, &last_status);
@@ -98,5 +58,5 @@ int	main(int argc, char **argv, char **envp)
 	}
 	rl_clear_history();
 	free_split(env_vars);
-	return (0);
+	return (last_status);
 }

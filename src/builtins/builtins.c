@@ -52,6 +52,11 @@ int	ft_cd(char **args, char ***envp)
 {
 	char	*path;
 
+	if (args[1] && args[2])
+	{
+		ft_putendl_fd("minishell: cd: too many arguments", 2);
+		return (1);
+	}
 	if (!args[1])
 	{
 		path = get_env_value(*envp, "HOME");
@@ -99,7 +104,7 @@ int	ft_exit(char **args, int *last_status)
 		ft_putstr_fd("minishell: exit: ", 2);
 		ft_putstr_fd(args[1], 2);
 		ft_putendl_fd(": numeric argument required", 2);
-		exit(2);
+		exit(255);
 	}
 	if (args[2])
 	{

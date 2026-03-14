@@ -68,20 +68,35 @@ static char	*handle_expansion(char *res, char *val, int *i, t_exec_params *p)
 	return (tmp);
 }
 
-char	*expand_status(char *val, int last_status, char **envp)
+static void	toggle_quotes(char c, bool *s_quote, bool *d_quote)
 {
-	char			*res;
-	int				i;
-	t_exec_params	p;
+	if (c == '\'' && !*d_quote)
+		*s_quote = !*s_quote;
+	else if (c == '"' && !*s_quote)
+		*d_quote = !*d_quote;
+}
 
-	p.envp = &envp;
-	p.last_status = &last_status;
+char	*expand_status(char *val, t_exec_params *params)
+{
+	char	*res;
+	int		i;
+	bool	s_quote;
+	bool	d_quote;
+
 	res = ft_strdup("");
 	i = 0;
+	s_quote = false;
+	d_quote = false;
 	while (val[i])
 	{
-		if (val[i] == '$' && val[i + 1])
-			res = handle_expansion(res, val, &i, &p);
+		if ((val[i] == '\'' && !d_quote) || (val[i] == '"' && !s_quote))
+		{
+			toggle_quotes(val[i++], &s_quote, &d_quote);
+			continue ;
+		}
+		if (val[i] == '$' && !s_quote && val[i + 1] && \
+			(ft_isalnum(val[i + 1]) || val[i + 1] == '_' || val[i + 1] == '?'))
+			res = handle_expansion(res, val, &i, params);
 		else
 			res = append_char(res, val[i++]);
 	}

@@ -65,26 +65,20 @@ typedef struct s_exec_params
 	int		p_fd[2];
 }	t_exec_params;
 
-/*
- * Struct for input file
- */
-typedef struct s_infile
+typedef enum e_redir_type
 {
-	char			*filename;
-	bool			is_heredoc;
-	char			*limiter;
-	struct s_infile	*next;
-}	t_infile;
+	REDIR_IN,
+	REDIR_OUT,
+	REDIR_APPEND,
+	REDIR_HEREDOC
+}	t_redir_type;
 
-/*
- * Struct for output file
- */
-typedef struct s_outfile
+typedef struct s_redir
 {
-	char				*filename;
-	bool				is_append;
-	struct s_outfile	*next;
-}	t_outfile;
+	t_redir_type	type;
+	char			*filename;
+	struct s_redir	*next;
+}	t_redir;
 
 /*
  * Struct for command node
@@ -93,8 +87,7 @@ typedef struct s_command
 {
 	char				**args;
 	char				*cmd_path;
-	t_infile			*infiles;
-	t_outfile			*outfiles;
+	t_redir				*redirs;
 	int					fd_in;
 	int					fd_out;
 	struct s_command	*next;
@@ -109,7 +102,7 @@ t_command	*parse_input(char *line, char **envp, int *last_status);
 int			is_whitespace(char c);
 t_token		*new_token(char *value, t_token_type type);
 void		append_token(t_token **head, t_token *new_t);
-char		*expand_status(char *val, int last_status, char **envp);
+char		*expand_status(char *val, t_exec_params *params);
 t_command	*new_command(void);
 void		add_argument(t_command *cmd, char *arg);
 void		add_redirection(t_command *cmd, t_token *token,
@@ -130,6 +123,7 @@ void		run_single_builtin(t_command *cmd, char ***envp, int *last_status);
 int			handle_redirections(t_command *cmd);
 void		wait_for_children(int prev_pipe_fd, int *last_status);
 void		child_process(t_command *cmd, t_exec_params *params);
+int			is_dir(char *path);
 
 /*
  * Builtins

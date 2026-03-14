@@ -6,36 +6,62 @@
 /*   By: hko-ko <hko-ko@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026-03-14 20:35:00 by hko-ko            #+#    #+#             */
-/*   Updated: 2026-03-14 20:35:00 by hko-ko           ###   ########.fr       */
+/*   Updated: 2026-03-14 21:10:00 by hko-ko           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
+static int	is_valid_identifier(char *s)
+{
+	int	i;
+
+	if (!s || (!ft_isalpha(s[0]) && s[0] != '_'))
+		return (0);
+	i = 1;
+	while (s[i])
+	{
+		if (!ft_isalnum(s[i]) && s[i] != '_')
+			return (0);
+		i++;
+	}
+	return (1);
+}
+
+static int	export_error(char *arg)
+{
+	ft_putstr_fd("minishell: export: `", 2);
+	ft_putstr_fd(arg, 2);
+	ft_putendl_fd("': not a valid identifier", 2);
+	return (1);
+}
+
 int	ft_export(char **args, char ***envp)
 {
 	int		i;
+	int		ret;
 	char	*key;
-	char	*value;
 	char	*equal;
 
 	if (!args[1])
 		return (ft_env(*envp));
 	i = 1;
+	ret = 0;
 	while (args[i])
 	{
 		equal = ft_strchr(args[i], '=');
 		if (equal)
-		{
 			key = ft_substr(args[i], 0, equal - args[i]);
-			value = ft_strdup(equal + 1);
-			set_env(envp, key, value);
-			free(key);
-			free(value);
-		}
+		else
+			key = ft_strdup(args[i]);
+		if (!is_valid_identifier(key))
+			ret = export_error(args[i]);
+		else if (equal)
+			set_env(envp, key, equal + 1);
+		free(key);
 		i++;
 	}
-	return (0);
+	return (ret);
 }
 
 static void	unset_var(char ***envp, char *key)
@@ -65,14 +91,24 @@ static void	unset_var(char ***envp, char *key)
 int	ft_unset(char **args, char ***envp)
 {
 	int		i;
+	int		ret;
 
 	if (!args[1])
 		return (0);
 	i = 1;
+	ret = 0;
 	while (args[i])
 	{
-		unset_var(envp, args[i]);
+		if (!is_valid_identifier(args[i]))
+		{
+			ft_putstr_fd("minishell: unset: `", 2);
+			ft_putstr_fd(args[i], 2);
+			ft_putendl_fd("': not a valid identifier", 2);
+			ret = 1;
+		}
+		else
+			unset_var(envp, args[i]);
 		i++;
 	}
-	return (0);
+	return (ret);
 }

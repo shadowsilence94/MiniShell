@@ -12,52 +12,37 @@
 
 #include "minishell.h"
 
-static void	add_infile(t_command *cmd, t_token *token, t_token *file_token)
+static t_redir_type	get_redir_type(t_token_type type)
 {
-	t_infile	*in;
-	t_infile	*last_in;
-
-	in = (t_infile *)malloc(sizeof(t_infile));
-	in->filename = ft_strdup(file_token->value);
-	in->is_heredoc = (token->type == TOKEN_HEREDOC);
-	in->next = NULL;
-	if (!cmd->infiles)
-		cmd->infiles = in;
-	else
-	{
-		last_in = cmd->infiles;
-		while (last_in->next)
-			last_in = last_in->next;
-		last_in->next = in;
-	}
-}
-
-static void	add_outfile(t_command *cmd, t_token *token, t_token *file_token)
-{
-	t_outfile	*out;
-	t_outfile	*last_out;
-
-	out = (t_outfile *)malloc(sizeof(t_outfile));
-	out->filename = ft_strdup(file_token->value);
-	out->is_append = (token->type == TOKEN_APPEND);
-	out->next = NULL;
-	if (!cmd->outfiles)
-		cmd->outfiles = out;
-	else
-	{
-		last_out = cmd->outfiles;
-		while (last_out->next)
-			last_out = last_out->next;
-		last_out->next = out;
-	}
+	if (type == TOKEN_REDIRECT_IN)
+		return (REDIR_IN);
+	if (type == TOKEN_REDIRECT_OUT)
+		return (REDIR_OUT);
+	if (type == TOKEN_APPEND)
+		return (REDIR_APPEND);
+	return (REDIR_HEREDOC);
 }
 
 void	add_redirection(t_command *cmd, t_token *token, t_token *file_token)
 {
-	if (token->type == TOKEN_REDIRECT_IN || token->type == TOKEN_HEREDOC)
-		add_infile(cmd, token, file_token);
+	t_redir	*redir;
+	t_redir	*last;
+
+	redir = (t_redir *)malloc(sizeof(t_redir));
+	if (!redir)
+		return ;
+	redir->type = get_redir_type(token->type);
+	redir->filename = ft_strdup(file_token->value);
+	redir->next = NULL;
+	if (!cmd->redirs)
+		cmd->redirs = redir;
 	else
-		add_outfile(cmd, token, file_token);
+	{
+		last = cmd->redirs;
+		while (last->next)
+			last = last->next;
+		last->next = redir;
+	}
 }
 
 static t_token	*handle_token(t_token *tmp, t_command **curr)

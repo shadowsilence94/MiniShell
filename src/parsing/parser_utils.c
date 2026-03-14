@@ -49,6 +49,20 @@ void	add_argument(t_command *cmd, char *arg)
 	cmd->args = new_args;
 }
 
+static void	free_redirs(t_redir *redir)
+{
+	t_redir	*tmp;
+
+	while (redir)
+	{
+		tmp = redir->next;
+		if (redir->filename)
+			free(redir->filename);
+		free(redir);
+		redir = tmp;
+	}
+}
+
 void	free_command_list(t_command *cmd)
 {
 	t_command	*tmp;
@@ -58,6 +72,8 @@ void	free_command_list(t_command *cmd)
 		tmp = cmd->next;
 		if (cmd->args)
 			free_split(cmd->args);
+		if (cmd->redirs)
+			free_redirs(cmd->redirs);
 		free(cmd);
 		cmd = tmp;
 	}

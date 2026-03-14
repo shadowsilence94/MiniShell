@@ -41,7 +41,7 @@ int	handle_word(char *line, int i, t_token **head, t_exec_params *params)
 
 	end = get_word_end(line, i);
 	word = ft_substr(line, i, end - i);
-	expanded = expand_status(word, *params->last_status, *params->envp);
+	expanded = expand_status(word, params);
 	append_token(head, new_token(expanded, TOKEN_WORD));
 	free(word);
 	return (end);

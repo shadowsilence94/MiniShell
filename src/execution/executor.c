@@ -86,15 +86,25 @@ static int	handle_assignment(t_command *cmd, char ***envp, int *last_status)
 
 void	execute_commands(t_command *cmd, char ***envp, int *last_status)
 {
-	if (!cmd->next && cmd->args)
+	if (!cmd->next)
 	{
-		if (handle_assignment(cmd, envp, last_status))
-			return ;
-		if (is_builtin(cmd->args[0]))
+		if (!cmd->args && cmd->redirs)
 		{
-			run_single_builtin(cmd, envp, last_status);
+			*last_status = handle_redirections(cmd);
 			return ;
 		}
+		if (cmd->args)
+		{
+			if (handle_assignment(cmd, envp, last_status))
+				return ;
+			if (is_builtin(cmd->args[0]))
+			{
+				run_single_builtin(cmd, envp, last_status);
+				return ;
+			}
+		}
+		if (!cmd->args && !cmd->redirs)
+			return ;
 	}
 	handle_process_loop(cmd, envp, last_status);
 }

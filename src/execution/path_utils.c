@@ -13,7 +13,7 @@
 #include "minishell.h"
 #include <sys/stat.h>
 
-static int	is_dir(char *path)
+int	is_dir(char *path)
 {
 	struct stat	st;
 

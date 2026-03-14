@@ -6,7 +6,7 @@
 /*   By: hko-ko <hko-ko@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/26 12:00:00 by hko-ko            #+#    #+#             */
-/*   Updated: 2026/03/14 21:10:00 by hko-ko           ###   ########.fr       */
+/*   Updated: 2026/03/14 22:25:00 by hko-ko           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,9 +14,14 @@
 
 volatile sig_atomic_t	g_signal_received = 0;
 
-/*
- * Process input line
- */
+static void	init_shell(char ***env_vars, char **envp)
+{
+	*env_vars = copy_env(envp);
+	increment_shlvl(env_vars);
+	setup_signals();
+	rl_bind_key('\t', rl_complete);
+}
+
 void	process_input(char *line, char ***envp, int *last_status)
 {
 	t_command	*cmd_list;
@@ -39,11 +44,8 @@ int	main(int argc, char **argv, char **envp)
 
 	(void)argc;
 	(void)argv;
-	env_vars = copy_env(envp);
-	increment_shlvl(&env_vars);
+	init_shell(&env_vars, envp);
 	last_status = 0;
-	setup_signals();
-	rl_bind_key('\t', rl_complete);
 	while (1)
 	{
 		line = readline(PROMPT);

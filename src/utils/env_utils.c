@@ -6,7 +6,7 @@
 /*   By: hko-ko <hko-ko@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026-03-14 19:20:00 by hko-ko            #+#    #+#             */
-/*   Updated: 2026-03-14 19:20:00 by hko-ko           ###   ########.fr       */
+/*   Updated: 2026-03-14 22:25:00 by hko-ko           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,20 +90,14 @@ void	set_env(char ***envp, char *key, char *value)
 	*envp = new_env;
 }
 
-void	increment_shlvl(char ***envp)
+char	*get_var_value(char *name, char **envp, int last_status)
 {
-	char	*shlvl;
-	int		val;
-	char	*new_val;
+	char	*val;
 
-	shlvl = get_env_value(*envp, "SHLVL");
-	if (!shlvl)
-		set_env(envp, "SHLVL", "1");
-	else
-	{
-		val = ft_atoi(shlvl) + 1;
-		new_val = ft_itoa(val);
-		set_env(envp, "SHLVL", new_val);
-		free(new_val);
-	}
+	if (ft_strncmp(name, "?", 2) == 0)
+		return (ft_itoa(last_status));
+	val = get_env_value(envp, name);
+	if (val)
+		return (ft_strdup(val));
+	return (ft_strdup(""));
 }

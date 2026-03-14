@@ -74,8 +74,6 @@ int	handle_redirections(t_command *cmd)
 		}
 		else if (redir->type == REDIR_HEREDOC)
 		{
-			// Heredoc should have been processed before or we handle it here
-			// For now, let's treat it as a special case or implement it
 		}
 		redir = redir->next;
 	}

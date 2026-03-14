@@ -6,7 +6,7 @@
 /*   By: hko-ko <hko-ko@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/26 12:00:00 by hko-ko            #+#    #+#             */
-/*   Updated: 2026/03/14 21:10:00 by hko-ko           ###   ########.fr       */
+/*   Updated: 2026/03/14 22:25:00 by hko-ko           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,4 +76,22 @@ void	free_split(char **split)
 		i++;
 	}
 	free(split);
+}
+
+void	increment_shlvl(char ***envp)
+{
+	char	*shlvl;
+	int		val;
+	char	*new_val;
+
+	shlvl = get_env_value(*envp, "SHLVL");
+	if (!shlvl)
+		set_env(envp, "SHLVL", "1");
+	else
+	{
+		val = ft_atoi(shlvl) + 1;
+		new_val = ft_itoa(val);
+		set_env(envp, "SHLVL", new_val);
+		free(new_val);
+	}
 }

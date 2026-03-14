@@ -151,6 +151,7 @@ char		**copy_env(char **envp);
 char		*get_env_value(char **envp, char *key);
 void		set_env(char ***envp, char *key, char *value);
 void		increment_shlvl(char ***envp);
+char		*get_var_value(char *name, char **envp, int last_status);
 
 /*
  * Signals

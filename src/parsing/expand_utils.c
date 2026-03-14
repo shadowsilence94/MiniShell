@@ -6,7 +6,7 @@
 /*   By: hko-ko <hko-ko@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/26 12:00:00 by hko-ko            #+#    #+#             */
-/*   Updated: 2026/03/14 21:10:00 by hko-ko           ###   ########.fr       */
+/*   Updated: 2026/03/14 22:30:00 by hko-ko           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,18 +27,6 @@ static char	*get_var_name(char *val, int *i)
 		(*i)++;
 	name = ft_substr(val, start, *i - start);
 	return (name);
-}
-
-static char	*get_var_value(char *name, char **envp, int last_status)
-{
-	char	*val;
-
-	if (ft_strncmp(name, "?", 2) == 0)
-		return (ft_itoa(last_status));
-	val = get_env_value(envp, name);
-	if (val)
-		return (ft_strdup(val));
-	return (ft_strdup(""));
 }
 
 static char	*append_char(char *res, char c)
@@ -80,22 +68,19 @@ char	*expand_status(char *val, t_exec_params *params)
 {
 	char	*res;
 	int		i;
-	bool	s_quote;
-	bool	d_quote;
+	bool	s_q;
+	bool	d_q;
 
 	res = ft_strdup("");
 	i = 0;
-	s_quote = false;
-	d_quote = false;
-	while (val[i])
+	s_q = false;
+	d_q = false;
+	while (val && val[i])
 	{
-		if ((val[i] == '\'' && !d_quote) || (val[i] == '"' && !s_quote))
-		{
-			toggle_quotes(val[i++], &s_quote, &d_quote);
-			continue ;
-		}
-		if (val[i] == '$' && !s_quote && val[i + 1] && \
-			(ft_isalnum(val[i + 1]) || val[i + 1] == '_' || val[i + 1] == '?'))
+		if ((val[i] == '\'' && !d_q) || (val[i] == '"' && !s_q))
+			toggle_quotes(val[i++], &s_q, &d_q);
+		else if (val[i] == '$' && !s_q && val[i + 1] && \
+(ft_isalnum(val[i + 1]) || val[i + 1] == '_' || val[i + 1] == '?'))
 			res = handle_expansion(res, val, &i, params);
 		else
 			res = append_char(res, val[i++]);

@@ -124,7 +124,7 @@ int			is_builtin(char *cmd);
 int			execute_builtin(t_command *cmd, char ***envp, int *last_status);
 void		run_single_builtin(t_command *cmd, char ***envp, int *last_status);
 int			handle_redirections(t_command *cmd);
-void		wait_for_children(int prev_pipe_fd, int *last_status);
+void		wait_for_children(pid_t last_pid, int *last_status);
 void		child_process(t_command *cmd, t_exec_params *params);
 int			is_dir(char *path);
 

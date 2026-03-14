@@ -12,18 +12,22 @@
 
 #include "minishell.h"
 
-void	wait_for_children(int prev_pipe_fd, int *last_status)
+void	wait_for_children(pid_t last_pid, int *last_status)
 {
-	int	status;
+	int		status;
+	pid_t	pid;
 
-	if (prev_pipe_fd != -1)
-		close(prev_pipe_fd);
-	while (wait(&status) > 0)
+	pid = wait(&status);
+	while (pid > 0)
 	{
-		if (WIFEXITED(status))
-			*last_status = WEXITSTATUS(status);
-		else if (WIFSIGNALED(status))
-			*last_status = 128 + WTERMSIG(status);
+		if (pid == last_pid)
+		{
+			if (WIFEXITED(status))
+				*last_status = WEXITSTATUS(status);
+			else if (WIFSIGNALED(status))
+				*last_status = 128 + WTERMSIG(status);
+		}
+		pid = wait(&status);
 	}
 }
 

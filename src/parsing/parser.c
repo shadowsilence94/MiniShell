@@ -22,7 +22,7 @@ static t_token	*handle_token(t_token *tmp, t_command **curr)
 	}
 	else if (tmp->type == TOKEN_WORD)
 		add_argument(*curr, tmp->value);
-	else if (tmp->type >= TOKEN_REDIRECT_IN && tmp->type <= TOKEN_APPEND)
+	else if (tmp->type >= TOKEN_REDIRECT_IN && tmp->type <= TOKEN_HEREDOC)
 	{
 		if (tmp->next && tmp->next->type == TOKEN_WORD)
 		{

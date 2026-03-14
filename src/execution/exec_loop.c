@@ -14,13 +14,10 @@
 
 static t_command	*setup_pipe(t_command *cmd, int pipe_fd[2])
 {
+	pipe_fd[0] = -1;
+	pipe_fd[1] = -1;
 	if (cmd->next && pipe(pipe_fd) == -1)
 		return (NULL);
-	else if (!cmd->next)
-	{
-		pipe_fd[0] = -1;
-		pipe_fd[1] = -1;
-	}
 	return (cmd);
 }
 
@@ -38,10 +35,12 @@ void	handle_process_loop(t_command *cmd, char ***envp, int *last_status)
 {
 	t_exec_params	p;
 	pid_t			pid;
+	pid_t			last_pid;
 
 	p.envp = envp;
 	p.last_status = last_status;
 	p.prev_fd = -1;
+	last_pid = -1;
 	while (cmd)
 	{
 		if (!setup_pipe(cmd, p.p_fd))
@@ -51,8 +50,10 @@ void	handle_process_loop(t_command *cmd, char ***envp, int *last_status)
 			return ;
 		if (pid == 0)
 			child_process(cmd, &p);
-		else
-			cleanup_parent(&p, &cmd);
+		last_pid = pid;
+		cleanup_parent(&p, &cmd);
 	}
-	wait_for_children(p.prev_fd, last_status);
+	if (p.prev_fd != -1)
+		close(p.prev_fd);
+	wait_for_children(last_pid, last_status);
 }

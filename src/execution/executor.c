@@ -39,7 +39,7 @@ static int	handle_assignment(t_command *cmd, char ***envp, int *last_status)
 	return (0);
 }
 
-static void	handle_single_redir(t_command *cmd, int *last_status)
+static void	handle_single_cmd(t_command *cmd, char ***envp, int *last_status)
 {
 	int	saved_stdout;
 	int	saved_stdin;
@@ -47,23 +47,12 @@ static void	handle_single_redir(t_command *cmd, int *last_status)
 	saved_stdout = dup(STDOUT_FILENO);
 	saved_stdin = dup(STDIN_FILENO);
 	*last_status = handle_redirections(cmd);
+	if (*last_status == 0)
+		run_single_builtin(cmd, envp, last_status);
 	dup2(saved_stdout, STDOUT_FILENO);
 	dup2(saved_stdin, STDIN_FILENO);
 	close(saved_stdout);
 	close(saved_stdin);
-}
-
-static void	handle_single_cmd(t_command *cmd, char ***envp, int *last_status)
-{
-	if (cmd->args[0] && cmd->args[0][0] == '\0' && !cmd->args[1])
-	{
-		if (handle_assignment(cmd, envp, last_status))
-			return ;
-	}
-	if (handle_assignment(cmd, envp, last_status))
-		return ;
-	if (is_builtin(cmd->args[0]))
-		run_single_builtin(cmd, envp, last_status);
 }
 
 void	execute_commands(t_command *cmd, char ***envp, int *last_status)
@@ -72,13 +61,18 @@ void	execute_commands(t_command *cmd, char ***envp, int *last_status)
 	{
 		if (!cmd->args && cmd->redirs)
 		{
-			handle_single_redir(cmd, last_status);
+			handle_single_cmd(cmd, envp, last_status);
 			return ;
 		}
 		if (cmd->args && cmd->args[0])
 		{
-			handle_single_cmd(cmd, envp, last_status);
-			return ;
+			if (handle_assignment(cmd, envp, last_status))
+				return ;
+			if (is_builtin(cmd->args[0]))
+			{
+				handle_single_cmd(cmd, envp, last_status);
+				return ;
+			}
 		}
 		if (!cmd->args && !cmd->redirs)
 			return ;

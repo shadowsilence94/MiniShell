@@ -106,7 +106,7 @@ void	add_redirection(t_command *cmd, t_token *token, t_token *file_token)
 /*
  * Main parser logic
  */
-t_command	*parse_input(char *line, char **envp)
+t_command	*parse_input(char *line, char **envp, int *last_status)
 {
 	t_token		*tokens;
 	t_token		*tmp;
@@ -114,7 +114,7 @@ t_command	*parse_input(char *line, char **envp)
 	t_command	*curr;
 
 	(void)envp;
-	tokens = tokenize(line);
+	tokens = tokenize(line, *last_status);
 	if (!tokens)
 		return (NULL);
 	head = new_command();

@@ -93,14 +93,14 @@ typedef struct s_command
 /*
  * Parsing & Lexing
  */
-t_token		*tokenize(char *line);
-t_command	*parse_input(char *line, char **envp);
+t_token		*tokenize(char *line, int last_status);
+t_command	*parse_input(char *line, char **envp, int *last_status);
 
 /*
  * Execution
  */
 char		*find_command_path(char *cmd, char **envp);
-void		execute_commands(t_command *cmd_list, char ***envp);
+void		execute_commands(t_command *cmd_list, char ***envp, int *last_status);
 
 /*
  * Builtins
@@ -109,7 +109,7 @@ int			ft_echo(char **args);
 int			ft_pwd(void);
 int			ft_cd(char **args, char ***envp);
 int			ft_env(char **envp);
-int			ft_exit(char **args);
+int			ft_exit(char **args, int *last_status);
 
 /*
  * Cleanup

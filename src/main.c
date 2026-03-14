@@ -56,18 +56,16 @@ void	print_commands(t_command *cmd)
 /*
  * Process input line
  */
-void	process_input(char *line, char ***envp)
+void	process_input(char *line, char ***envp, int *last_status)
 {
 	t_command *cmd_list;
 
 	if (line && *line)
 		add_history(line);
-	cmd_list = parse_input(line, *envp);
+	cmd_list = parse_input(line, *envp, last_status);
 	if (cmd_list)
 	{
-		// print_commands(cmd_list);
-		execute_commands(cmd_list, envp);
-		// free_command_list(cmd_list);
+		execute_commands(cmd_list, envp, last_status);
 	}
 }
 
@@ -75,11 +73,13 @@ int	main(int argc, char **argv, char **envp)
 {
 	char	*line;
 	char	**env_vars;
+	int		last_status;
 
 	(void)argc;
 	(void)argv;
-	// TODO: Copy envp to our own list/array
-	env_vars = envp; // Placeholder
+	/* Placeholder: Should copy envp to our own list/array */
+	env_vars = envp;
+	last_status = 0;
 
 	setup_signals();
 	while (1)
@@ -90,10 +90,10 @@ int	main(int argc, char **argv, char **envp)
 			printf("exit\n");
 			break ;
 		}
-		process_input(line, &env_vars);
+		process_input(line, &env_vars, &last_status);
 		free(line);
 	}
-	// TODO: Free env_vars
+	/* TODO: Free env_vars */
 	rl_clear_history();
 	return (0);
 }

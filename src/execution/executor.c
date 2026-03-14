@@ -23,7 +23,7 @@ int	handle_redirections(t_command *cmd)
 	{
 		if (in->is_heredoc)
 		{
-			// TODO: Implement heredoc
+			/* TODO: Implement heredoc */
 		}
 		else
 		{
@@ -80,7 +80,7 @@ int	is_builtin(char *cmd)
 	return (0);
 }
 
-int	execute_builtin(t_command *cmd, char ***envp)
+int	execute_builtin(t_command *cmd, char ***envp, int *last_status)
 {
 	if (ft_strncmp(cmd->args[0], "echo", 5) == 0)
 		return (ft_echo(cmd->args));
@@ -91,12 +91,12 @@ int	execute_builtin(t_command *cmd, char ***envp)
 	if (ft_strncmp(cmd->args[0], "env", 4) == 0)
 		return (ft_env(*envp));
 	if (ft_strncmp(cmd->args[0], "exit", 5) == 0)
-		return (ft_exit(cmd->args));
-    // TODO: export/unset
+		return (ft_exit(cmd->args, last_status));
+	/* TODO: export/unset */
 	return (0);
 }
 
-void	child_process(t_command *cmd, char ***envp, int prev_pipe_fd, int pipe_fd[2])
+void	child_process(t_command *cmd, char ***envp, int prev_pipe_fd, int pipe_fd[2], int *last_status)
 {
 	char	*path;
 
@@ -118,7 +118,7 @@ void	child_process(t_command *cmd, char ***envp, int prev_pipe_fd, int pipe_fd[2
 		exit(0);
 
 	if (is_builtin(cmd->args[0]))
-		exit(execute_builtin(cmd, envp));
+		exit(execute_builtin(cmd, envp, last_status));
 
 	path = find_command_path(cmd->args[0], *envp);
 	if (!path)
@@ -132,48 +132,65 @@ void	child_process(t_command *cmd, char ***envp, int prev_pipe_fd, int pipe_fd[2
 	exit(1);
 }
 
-void	execute_commands(t_command *cmd, char ***envp)
+static int	run_single_builtin(t_command *cmd, char ***envp, int *last_status)
+{
+	int	original_stdin;
+	int	original_stdout;
+
+	original_stdin = dup(STDIN_FILENO);
+	original_stdout = dup(STDOUT_FILENO);
+	if (handle_redirections(cmd) == 0)
+		*last_status = execute_builtin(cmd, envp, last_status);
+	else
+		*last_status = 1;
+	dup2(original_stdin, STDIN_FILENO);
+	dup2(original_stdout, STDOUT_FILENO);
+	close(original_stdin);
+	close(original_stdout);
+	return (1);
+}
+
+static void	wait_for_children(int prev_pipe_fd, int *last_status)
+{
+	int	status;
+
+	if (prev_pipe_fd != -1)
+		close(prev_pipe_fd);
+	while (wait(&status) > 0)
+	{
+		if (WIFEXITED(status))
+			*last_status = WEXITSTATUS(status);
+		else if (WIFSIGNALED(status))
+			*last_status = 128 + WTERMSIG(status);
+	}
+}
+
+void	execute_commands(t_command *cmd, char ***envp, int *last_status)
 {
 	int		pipe_fd[2];
 	int		prev_pipe_fd;
 	pid_t	pid;
-	int		status;
-    int     original_stdin;
-    int     original_stdout;
 
 	prev_pipe_fd = -1;
-    
-    // Single builtin command in parent check
-    if (!cmd->next && cmd->args && cmd->args[0] && 
-        (ft_strncmp(cmd->args[0], "cd", 3) == 0 || ft_strncmp(cmd->args[0], "exit", 5) == 0))
-    {
-        original_stdin = dup(STDIN_FILENO);
-        original_stdout = dup(STDOUT_FILENO);
-        if (handle_redirections(cmd) == 0)
-            execute_builtin(cmd, envp);
-        dup2(original_stdin, STDIN_FILENO);
-        dup2(original_stdout, STDOUT_FILENO);
-        close(original_stdin);
-        close(original_stdout);
-        return ;
-    }
-
+	if (!cmd->next && cmd->args && cmd->args[0]
+		&& (ft_strncmp(cmd->args[0], "cd", 3) == 0
+			|| ft_strncmp(cmd->args[0], "exit", 5) == 0))
+	{
+		run_single_builtin(cmd, envp, last_status);
+		return ;
+	}
 	while (cmd)
 	{
-		if (cmd->next)
+		if (cmd->next && pipe(pipe_fd) == -1)
 		{
-			if (pipe(pipe_fd) == -1)
-			{
-				perror("pipe");
-				return ;
-			}
+			perror("pipe");
+			return ;
 		}
-		else
+		else if (!cmd->next)
 		{
 			pipe_fd[0] = -1;
 			pipe_fd[1] = -1;
 		}
-
 		pid = fork();
 		if (pid == -1)
 		{
@@ -181,7 +198,7 @@ void	execute_commands(t_command *cmd, char ***envp)
 			return ;
 		}
 		if (pid == 0)
-			child_process(cmd, envp, prev_pipe_fd, pipe_fd);
+			child_process(cmd, envp, prev_pipe_fd, pipe_fd, last_status);
 		else
 		{
 			if (prev_pipe_fd != -1)
@@ -192,8 +209,5 @@ void	execute_commands(t_command *cmd, char ***envp)
 			cmd = cmd->next;
 		}
 	}
-	if (prev_pipe_fd != -1)
-		close(prev_pipe_fd);
-	while (wait(&status) > 0)
-		;
+	wait_for_children(prev_pipe_fd, last_status);
 }

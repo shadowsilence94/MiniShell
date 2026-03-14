@@ -32,6 +32,8 @@ ls | cat
 ls -l | grep min
 ls -l | grep min | cat -e
 cat | cat | ls           # Should list files instantly (async execution check)
+echo "test" | wc -l | cat -e
+ls | grep "\.c" | wc -l | awk '{print $1}' | cat -e   # Heavy piping test
 ```
 
 ## 4. Redirections
@@ -91,9 +93,36 @@ env
 ```
 
 ### `exit`
+Testing exit codes and behaviors.
 ```bash
 exit
-# Shell should close
+# Shell should close cleanly
+
+exit 42
+# Shell should close, type `echo $?` in bash to verify it returns 42
+
+exit 255
+# Shell should close, `echo $?` should be 255
+
+exit abc
+# Should print error "numeric argument required" and exit with code 2
+
+exit 1 2 3
+# Should print error "too many arguments" and NOT exit
+
+exit 9223372036854775807
+# Edge case for max positive long long
+
+exit -9223372036854775808
+# Edge case for min negative long long
+```
+
+### `$?` (Exit Status)
+```bash
+echo $?                  # Should print last command exit status
+ls /invalid/path
+echo $?                  # Should print non-zero (usually 1, 2, or 127 depending on system)
+echo $? | cat            # Testing expansion in pipeline
 ```
 
 ## 6. Signals
@@ -103,6 +132,10 @@ exit
 
 ## 7. Edge Cases & Errors
 ```bash
-/bin/ls-404              # Command not found
-./minishell              # Running shell inside shell
+/bin/ls-404              # Command not found, check exit code `$?` (should be 127)
+./minishell              # Running shell inside shell (increment SHLVL test)
+""                       # Empty quote command
+" "                      # Single space command
+> out.txt                # Redirection without command (should create file)
+< in.txt                 # Invalid input redirection without command if file does not exist
 ```

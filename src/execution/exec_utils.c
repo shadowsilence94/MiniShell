@@ -31,7 +31,7 @@ static void	run_command(t_command *cmd, char ***envp)
 {
 	char	*path;
 
-	if (!cmd->args || !cmd->args[0])
+	if (!cmd->args || !cmd->args[0] || cmd->args[0][0] == '\0')
 		exit(0);
 	path = find_command_path(cmd->args[0], *envp);
 	if (!path)

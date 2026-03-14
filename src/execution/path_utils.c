@@ -11,6 +11,16 @@
 /* ************************************************************************** */
 
 #include "minishell.h"
+#include <sys/stat.h>
+
+static int	is_dir(char *path)
+{
+	struct stat	st;
+
+	if (stat(path, &st) == -1)
+		return (0);
+	return (S_ISDIR(st.st_mode));
+}
 
 static char	*try_paths(char **paths, char *cmd)
 {
@@ -24,7 +34,7 @@ static char	*try_paths(char **paths, char *cmd)
 		part_path = ft_strjoin(paths[i], "/");
 		full_path = ft_strjoin(part_path, cmd);
 		free(part_path);
-		if (access(full_path, X_OK) == 0)
+		if (access(full_path, X_OK) == 0 && !is_dir(full_path))
 			return (full_path);
 		free(full_path);
 		i++;
@@ -36,7 +46,7 @@ static char	*handle_absolute_path(char *cmd)
 {
 	if (ft_strchr(cmd, '/'))
 	{
-		if (access(cmd, X_OK) == 0)
+		if (access(cmd, X_OK) == 0 && !is_dir(cmd))
 			return (ft_strdup(cmd));
 		return (NULL);
 	}

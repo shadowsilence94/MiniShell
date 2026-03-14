@@ -90,8 +90,19 @@ void	execute_commands(t_command *cmd, char ***envp, int *last_status)
 	{
 		if (!cmd->args && cmd->redirs)
 		{
+			int saved_stdout = dup(STDOUT_FILENO);
+			int saved_stdin = dup(STDIN_FILENO);
 			*last_status = handle_redirections(cmd);
+			dup2(saved_stdout, STDOUT_FILENO);
+			dup2(saved_stdin, STDIN_FILENO);
+			close(saved_stdout);
+			close(saved_stdin);
 			return ;
+		}
+		if (cmd->args && cmd->args[0] && cmd->args[0][0] == '\0' && !cmd->args[1])
+		{
+			if (handle_assignment(cmd, envp, last_status))
+				return ;
 		}
 		if (cmd->args)
 		{

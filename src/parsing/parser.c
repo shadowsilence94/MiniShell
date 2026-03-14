@@ -12,6 +12,38 @@
 
 #include "minishell.h"
 
+static int	validate_syntax(t_token *tokens)
+{
+	t_token	*tmp;
+
+	if (!tokens)
+		return (0);
+	if (tokens->type == TOKEN_PIPE)
+	{
+		ft_putendl_fd("minishell: syntax error near unexpected token `|'", 2);
+		return (1);
+	}
+	tmp = tokens;
+	while (tmp)
+	{
+		if (tmp->type == TOKEN_PIPE && (!tmp->next || tmp->next->type == TOKEN_PIPE))
+		{
+			ft_putendl_fd("minishell: syntax error near unexpected token `|'", 2);
+			return (1);
+		}
+		if (tmp->type >= TOKEN_REDIRECT_IN && tmp->type <= TOKEN_APPEND)
+		{
+			if (!tmp->next || tmp->next->type != TOKEN_WORD)
+			{
+				ft_putendl_fd("minishell: syntax error near redirection", 2);
+				return (1);
+			}
+		}
+		tmp = tmp->next;
+	}
+	return (0);
+}
+
 static t_redir_type	get_redir_type(t_token_type type)
 {
 	if (type == TOKEN_REDIRECT_IN)
@@ -84,6 +116,11 @@ t_command	*parse_input(char *line, char **envp, int *last_status)
 	tokens = tokenize(line, &params);
 	if (!tokens)
 		return (NULL);
+	if (validate_syntax(tokens))
+	{
+		*last_status = 2;
+		return (NULL);
+	}
 	head = new_command();
 	curr = head;
 	tmp = tokens;

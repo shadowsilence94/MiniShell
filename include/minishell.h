@@ -112,10 +112,12 @@ typedef struct s_command
  */
 t_token		*tokenize(char *line, t_exec_params *params);
 t_command	*parse_input(char *line, char **envp, int *last_status);
+t_command	*parse_tokens(t_token *tokens);
 int			validate_syntax(t_token *tokens);
 int			is_whitespace(char c);
 t_token		*new_token(char *value, t_token_type type);
 void		append_token(t_token **head, t_token *new_t);
+void		free_tokens(t_token *tokens);
 char		*expand_status(char *val, t_exec_params *params);
 t_command	*new_command(void);
 void		add_argument(t_command *cmd, char *arg);
@@ -127,6 +129,7 @@ int			handle_word(char *line, int i, t_token **head,
 t_token		*expand_wildcard(char *pattern);
 int			has_unquoted_wildcard(char *str);
 char		*append_char(char *res, char c);
+t_token		*extract_subtokens(t_token *start, t_token *end);
 
 /*
  * Execution

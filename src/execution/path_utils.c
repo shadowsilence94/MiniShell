@@ -42,17 +42,6 @@ static char	*try_paths(char **paths, char *cmd)
 	return (NULL);
 }
 
-static char	*handle_absolute_path(char *cmd)
-{
-	if (ft_strchr(cmd, '/'))
-	{
-		if (access(cmd, X_OK) == 0 && !is_dir(cmd))
-			return (ft_strdup(cmd));
-		return (NULL);
-	}
-	return (NULL);
-}
-
 char	*find_command_path(char *cmd, char **envp)
 {
 	char	**paths;

@@ -24,11 +24,14 @@ OBJ_DIR     = obj
 # Source files (to be expanded as we implement)
 SRC_FILES   = main.c \
 			parsing/lexer.c \
+			parsing/lexer_utils.c \
 			parsing/parser.c \
 			parsing/token_utils.c \
 			parsing/parser_utils.c \
 			parsing/expand_utils.c \
 			execution/executor.c \
+			execution/redirection.c \
+			execution/exec_utils.c \
 			execution/path_utils.c \
 			execution/builtin_executor.c \
 			builtins/builtins.c \
@@ -36,6 +39,7 @@ SRC_FILES   = main.c \
 			signals.c
 
 SRCS        = $(addprefix $(SRC_DIR)/, $(SRC_FILES))
+
 
 OBJS        = $(patsubst $(SRC_DIR)/%.c, $(OBJ_DIR)/%.o, $(SRCS))
 

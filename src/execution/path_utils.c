@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   path_utils.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: antigravity <antigravity@student.42.fr>    +#+  +:+       +#+        */
+/*   By: antigrav <antigrav@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/12/26 12:00:00 by antigravity       #+#    #+#             */
-/*   Updated: 2025/12/26 12:00:00 by antigravity      ###   ########.fr       */
+/*   Created: 2025/12/26 12:00:00 by antigrav          #+#    #+#             */
+/*   Updated: 2025/12/26 12:00:00 by antigrav         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,8 +14,8 @@
 
 char	*get_env_value(char **envp, char *key)
 {
-	int		i;
-	int		key_len;
+	int	i;
+	int	key_len;
 
 	i = 0;
 	key_len = ft_strlen(key);
@@ -91,4 +91,3 @@ char	*find_command_path(char *cmd, char **envp)
 	free_split(paths);
 	return (res);
 }
-

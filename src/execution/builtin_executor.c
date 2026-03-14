@@ -3,13 +3,12 @@
 /*                                                        :::      ::::::::   */
 /*   builtin_executor.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: antigravity <antigravity@student.42.fr>    +#+  +:+       +#+        */
+/*   By: antigrav <antigrav@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/03/14 16:35:00 by antigravity       #+#    #+#             */
-/*   Updated: 2026/03/14 16:35:00 by antigravity      ###   ########.fr       */
+/*   Created: 2026/03/14 16:35:00 by antigrav       #+#    #+#             */
+/*   Updated: 2026/03/14 16:35:00 by antigrav      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
 #include "minishell.h"
 
 int	is_builtin(char *cmd)
@@ -52,7 +51,6 @@ int	run_single_builtin(t_command *cmd, char ***envp, int *last_status)
 {
 	int	original_stdin;
 	int	original_stdout;
-
 	original_stdin = dup(STDIN_FILENO);
 	original_stdout = dup(STDOUT_FILENO);
 	if (handle_redirections(cmd) == 0)
@@ -65,3 +63,4 @@ int	run_single_builtin(t_command *cmd, char ***envp, int *last_status)
 	close(original_stdout);
 	return (1);
 }
+

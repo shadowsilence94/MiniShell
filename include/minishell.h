@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: antigravity <antigravity@student.42.fr>    +#+  +:+       +#+        */
+/*   By: antigrav <antigrav@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/12/26 12:00:00 by antigravity       #+#    #+#             */
-/*   Updated: 2025/12/26 12:00:00 by antigravity      ###   ########.fr       */
+/*   Created: 2025/12/26 12:00:00 by antigrav       #+#    #+#             */
+/*   Updated: 2025/12/26 12:00:00 by antigrav      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,7 +90,6 @@ typedef struct s_command
 	struct s_command	*prev;
 }	t_command;
 
-
 /*
  * Parsing & Lexing
  */
@@ -104,8 +103,8 @@ t_command	*new_command(void);
 void		add_argument(t_command *cmd, char *arg);
 void		add_redirection(t_command *cmd, t_token *token,
 				t_token *file_token);
-
-
+int			get_word_end(char *line, int i);
+int			handle_word(char *line, int i, t_token **head, int last_status);
 
 /*
  * Execution
@@ -117,7 +116,10 @@ int			is_builtin(char *cmd);
 int			execute_builtin(t_command *cmd, char ***envp, int *last_status);
 int			run_single_builtin(t_command *cmd, char ***envp, int *last_status);
 int			handle_redirections(t_command *cmd);
-
+void		wait_for_children(int prev_pipe_fd, int *last_status);
+void		run_command(t_command *cmd, char ***envp, int *last_status);
+void		child_process(t_command *cmd, char ***envp, int prev_fd,
+				int pipe_fd[2]);
 
 /*
  * Builtins
@@ -129,7 +131,6 @@ int			ft_env(char **envp);
 int			ft_exit(char **args, int *last_status);
 int			is_all_digits(char *str);
 long long	ft_atoll(const char *str);
-
 
 /*
  * Cleanup

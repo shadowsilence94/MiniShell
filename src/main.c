@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: antigravity <antigravity@student.42.fr>    +#+  +:+       +#+        */
+/*   By: antigrav <antigrav@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/12/26 12:00:00 by antigravity       #+#    #+#             */
-/*   Updated: 2025/12/26 12:00:00 by antigravity      ###   ########.fr       */
+/*   Created: 2025/12/26 12:00:00 by antigrav          #+#    #+#             */
+/*   Updated: 2025/12/26 12:00:00 by antigrav         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,7 +61,7 @@ void	print_commands(t_command *cmd)
  */
 void	process_input(char *line, char ***envp, int *last_status)
 {
-	t_command *cmd_list;
+	t_command	*cmd_list;
 
 	if (line && *line)
 		add_history(line);
@@ -80,7 +80,6 @@ int	main(int argc, char **argv, char **envp)
 
 	(void)argc;
 	(void)argv;
-	/* Placeholder: Should copy envp to our own list/array */
 	env_vars = envp;
 	last_status = 0;
 	setup_signals();
@@ -95,7 +94,6 @@ int	main(int argc, char **argv, char **envp)
 		process_input(line, &env_vars, &last_status);
 		free(line);
 	}
-	/* TODO: Free env_vars */
 	rl_clear_history();
 	return (0);
 }

@@ -3,19 +3,15 @@
 /*                                                        :::      ::::::::   */
 /*   parser.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: antigravity <antigravity@student.42.fr>    +#+  +:+       +#+        */
+/*   By: antigrav <antigrav@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/12/26 12:00:00 by antigravity       #+#    #+#             */
-/*   Updated: 2025/12/26 12:00:00 by antigravity      ###   ########.fr       */
+/*   Created: 2025/12/26 12:00:00 by antigrav          #+#    #+#             */
+/*   Updated: 2025/12/26 12:00:00 by antigrav         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-
-/*
- * Add redirection to command
- */
 static void	add_infile(t_command *cmd, t_token *token, t_token *file_token)
 {
 	t_infile	*in;
@@ -64,9 +60,6 @@ void	add_redirection(t_command *cmd, t_token *token, t_token *file_token)
 		add_outfile(cmd, token, file_token);
 }
 
-/*
- * Main parser logic
- */
 static t_token	*handle_token(t_token *tmp, t_command **curr)
 {
 	if (tmp->type == TOKEN_PIPE)

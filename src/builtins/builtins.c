@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   builtins.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: antigravity <antigravity@student.42.fr>    +#+  +:+       +#+        */
+/*   By: antigrav <antigrav@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/12/26 12:00:00 by antigravity       #+#    #+#             */
-/*   Updated: 2025/12/26 12:00:00 by antigravity      ###   ########.fr       */
+/*   Created: 2025/12/26 12:00:00 by antigrav          #+#    #+#             */
+/*   Updated: 2025/12/26 12:00:00 by antigrav         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,8 +14,8 @@
 
 int	ft_echo(char **args)
 {
-	int		i;
-	int		newline;
+	int	i;
+	int	newline;
 
 	i = 1;
 	newline = 1;
@@ -77,7 +77,6 @@ int	ft_env(char **envp)
 	return (0);
 }
 
-
 int	ft_exit(char **args, int *last_status)
 {
 	int	code;
@@ -86,9 +85,7 @@ int	ft_exit(char **args, int *last_status)
 		ft_putendl_fd("exit", 1);
 	code = *last_status;
 	if (!args[1])
-	{
 		exit((unsigned char)code);
-	}
 	if (!is_all_digits(args[1]))
 	{
 		ft_putstr_fd("minishell: exit: ", 2);

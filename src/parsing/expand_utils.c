@@ -3,13 +3,12 @@
 /*                                                        :::      ::::::::   */
 /*   expand_utils.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: antigravity <antigravity@student.42.fr>    +#+  +:+       +#+        */
+/*   By: antigrav <antigrav@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/03/14 16:35:00 by antigravity       #+#    #+#             */
-/*   Updated: 2026/03/14 16:35:00 by antigravity      ###   ########.fr       */
+/*   Created: 2026/03/14 16:35:00 by antigrav       #+#    #+#             */
+/*   Updated: 2026/03/14 16:35:00 by antigrav      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
 #include "minishell.h"
 
 static char	*copy_expanded(char *val, char *status_str, int len)
@@ -17,7 +16,6 @@ static char	*copy_expanded(char *val, char *status_str, int len)
 	char	*new_val;
 	int		i;
 	int		j;
-
 	new_val = (char *)malloc(len + 1);
 	if (!new_val)
 		return (NULL);
@@ -31,9 +29,11 @@ static char	*copy_expanded(char *val, char *status_str, int len)
 			j += ft_strlen(status_str);
 			i += 2;
 		}
+
 		else
 			new_val[j++] = val[i++];
 	}
+
 	new_val[j] = '\0';
 	return (new_val);
 }
@@ -43,7 +43,6 @@ char	*expand_status(char *val, int last_status)
 	char	*new_val;
 	char	*status_str;
 	int		len;
-
 	if (!ft_strnstr(val, "$?", ft_strlen(val)))
 		return (val);
 	status_str = ft_itoa(last_status);
@@ -57,3 +56,4 @@ char	*expand_status(char *val, int last_status)
 	free(val);
 	return (new_val);
 }
+

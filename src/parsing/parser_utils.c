@@ -3,19 +3,17 @@
 /*                                                        :::      ::::::::   */
 /*   parser_utils.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: antigravity <antigravity@student.42.fr>    +#+  +:+       +#+        */
+/*   By: antigrav <antigrav@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/03/14 16:35:00 by antigravity       #+#    #+#             */
-/*   Updated: 2026/03/14 16:35:00 by antigravity      ###   ########.fr       */
+/*   Created: 2026/03/14 16:35:00 by antigrav       #+#    #+#             */
+/*   Updated: 2026/03/14 16:35:00 by antigrav      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
 #include "minishell.h"
 
 t_command	*new_command(void)
 {
 	t_command	*cmd;
-
 	cmd = (t_command *)malloc(sizeof(t_command));
 	if (!cmd)
 		return (NULL);
@@ -30,7 +28,6 @@ void	add_argument(t_command *cmd, char *arg)
 	char	**new_args;
 	int		len;
 	int		i;
-
 	len = 0;
 	if (cmd->args)
 		while (cmd->args[len])
@@ -46,9 +43,12 @@ void	add_argument(t_command *cmd, char *arg)
 			new_args[i] = cmd->args[i];
 			i++;
 		}
+
 		free(cmd->args);
 	}
+
 	new_args[i] = ft_strdup(arg);
 	new_args[i + 1] = NULL;
 	cmd->args = (char **)new_args;
 }
+

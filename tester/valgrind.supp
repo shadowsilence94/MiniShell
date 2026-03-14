@@ -1,6 +1,7 @@
 {
    readline
    Memcheck:Leak
+   match-leak-kinds: all
    ...
    fun:readline
    ...
@@ -8,6 +9,7 @@
 {
    add_history
    Memcheck:Leak
+   match-leak-kinds: all
    ...
    fun:add_history
    ...
@@ -15,36 +17,35 @@
 {
    ignore_readline_so
    Memcheck:Leak
+   match-leak-kinds: all
    ...
-   obj:*libreadline*
-}
-{
-   ignore_readline_so2
-   Memcheck:Leak
-   ...
-   obj:*readline*
+   obj:*/libreadline.so.*
 }
 {
    grep
    Memcheck:Leak
+   match-leak-kinds: all
    ...
    obj:*/grep
 }
 {
    cat
    Memcheck:Leak
+   match-leak-kinds: all
    ...
    obj:*/cat
 }
 {
    ls
    Memcheck:Leak
+   match-leak-kinds: all
    ...
    obj:*/ls
 }
 {
    unknown
    Memcheck:Leak
+   match-leak-kinds: all
    ...
    fun:???
    ...
@@ -52,6 +53,7 @@
 {
    dlopen
    Memcheck:Leak
+   match-leak-kinds: all
    ...
    fun:dlopen*
    ...
@@ -59,6 +61,7 @@
 {
    rl_initialize
    Memcheck:Leak
+   match-leak-kinds: all
    ...
    fun:rl_initialize
    ...

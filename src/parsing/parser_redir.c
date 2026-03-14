@@ -73,6 +73,7 @@ int	validate_syntax(t_token *tokens)
 	}
 	if (parens > 0)
 		return (print_err("newline"));
+	return (0);
 }
 
 void	add_redirection(t_command *cmd, t_token *token, t_token *file_token)

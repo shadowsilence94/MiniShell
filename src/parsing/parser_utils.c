@@ -49,7 +49,7 @@ void	add_argument(t_command *cmd, char *arg)
 	cmd->args = new_args;
 }
 
-void	free_commands(t_command *cmd)
+void	free_command_list(t_command *cmd)
 {
 	t_command	*tmp;
 

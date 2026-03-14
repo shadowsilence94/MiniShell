@@ -46,3 +46,8 @@ int	handle_word(char *line, int i, t_token **head, int last_status)
 	free(word);
 	return (end);
 }
+
+int	is_whitespace(char c)
+{
+	return (c == ' ' || (c >= '\t' && c <= '\r'));
+}

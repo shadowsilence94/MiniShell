@@ -28,21 +28,6 @@ char	*get_env_value(char **envp, char *key)
 	return (NULL);
 }
 
-void	free_split(char **split)
-{
-	int	i;
-
-	i = 0;
-	if (!split)
-		return ;
-	while (split[i])
-	{
-		free(split[i]);
-		i++;
-	}
-	free(split);
-}
-
 static char	*try_paths(char **paths, char *cmd)
 {
 	char	*part_path;

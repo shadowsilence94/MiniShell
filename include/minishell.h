@@ -114,10 +114,9 @@ void		execute_commands(t_command *cmd_list, char ***envp,
 				int *last_status);
 int			is_builtin(char *cmd);
 int			execute_builtin(t_command *cmd, char ***envp, int *last_status);
-int			run_single_builtin(t_command *cmd, char ***envp, int *last_status);
+void		run_single_builtin(t_command *cmd, char ***envp, int *last_status);
 int			handle_redirections(t_command *cmd);
 void		wait_for_children(int prev_pipe_fd, int *last_status);
-void		run_command(t_command *cmd, char ***envp, int *last_status);
 void		child_process(t_command *cmd, char ***envp, int prev_fd,
 				int pipe_fd[2]);
 
@@ -136,6 +135,7 @@ long long	ft_atoll(const char *str);
  * Cleanup
  */
 void		free_command_list(t_command *cmd_list);
+void		free_split(char **split);
 
 /*
  * Signals

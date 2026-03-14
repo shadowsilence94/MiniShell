@@ -63,18 +63,26 @@ static char	*try_paths(char **paths, char *cmd)
 	return (NULL);
 }
 
-char	*find_command_path(char *cmd, char **envp)
+static char	*handle_absolute_path(char *cmd)
 {
-	char	**paths;
-	char	*path_env;
-	char	*res;
-
 	if (ft_strchr(cmd, '/'))
 	{
 		if (access(cmd, X_OK) == 0)
 			return (ft_strdup(cmd));
 		return (NULL);
 	}
+	return (NULL);
+}
+
+char	*find_command_path(char *cmd, char **envp)
+{
+	char	**paths;
+	char	*path_env;
+	char	*res;
+
+	res = handle_absolute_path(cmd);
+	if (res)
+		return (res);
 	path_env = get_env_value(envp, "PATH");
 	if (!path_env)
 		return (NULL);

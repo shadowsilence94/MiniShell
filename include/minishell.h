@@ -96,12 +96,28 @@ typedef struct s_command
  */
 t_token		*tokenize(char *line, int last_status);
 t_command	*parse_input(char *line, char **envp, int *last_status);
+int			is_whitespace(char c);
+t_token		*new_token(char *value, t_token_type type);
+void		append_token(t_token **head, t_token *new_t);
+char		*expand_status(char *val, int last_status);
+t_command	*new_command(void);
+void		add_argument(t_command *cmd, char *arg);
+void		add_redirection(t_command *cmd, t_token *token,
+				t_token *file_token);
+
+
 
 /*
  * Execution
  */
 char		*find_command_path(char *cmd, char **envp);
-void		execute_commands(t_command *cmd_list, char ***envp, int *last_status);
+void		execute_commands(t_command *cmd_list, char ***envp,
+				int *last_status);
+int			is_builtin(char *cmd);
+int			execute_builtin(t_command *cmd, char ***envp, int *last_status);
+int			run_single_builtin(t_command *cmd, char ***envp, int *last_status);
+int			handle_redirections(t_command *cmd);
+
 
 /*
  * Builtins
@@ -111,6 +127,9 @@ int			ft_pwd(void);
 int			ft_cd(char **args, char ***envp);
 int			ft_env(char **envp);
 int			ft_exit(char **args, int *last_status);
+int			is_all_digits(char *str);
+long long	ft_atoll(const char *str);
+
 
 /*
  * Cleanup

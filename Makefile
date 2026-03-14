@@ -25,13 +25,18 @@ OBJ_DIR     = obj
 SRC_FILES   = main.c \
 			parsing/lexer.c \
 			parsing/parser.c \
+			parsing/token_utils.c \
+			parsing/parser_utils.c \
+			parsing/expand_utils.c \
 			execution/executor.c \
 			execution/path_utils.c \
+			execution/builtin_executor.c \
 			builtins/builtins.c \
+			builtins/builtins_utils.c \
 			signals.c
 
-
 SRCS        = $(addprefix $(SRC_DIR)/, $(SRC_FILES))
+
 OBJS        = $(patsubst $(SRC_DIR)/%.c, $(OBJ_DIR)/%.o, $(SRCS))
 
 # Readline path for Mac

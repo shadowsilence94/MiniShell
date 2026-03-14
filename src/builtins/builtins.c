@@ -54,11 +54,8 @@ int	ft_cd(char **args, char ***envp)
 
 	(void)envp;
 	if (!args[1])
-	{
 		return (1);
-	}
-	else
-		path = args[1];
+	path = args[1];
 	if (chdir(path) == -1)
 	{
 		perror("cd");
@@ -80,56 +77,6 @@ int	ft_env(char **envp)
 	return (0);
 }
 
-static int	is_all_digits(char *str)
-{
-	unsigned long long	res;
-	int					i;
-	int					sign;
-
-	i = 0;
-	res = 0;
-	sign = 1;
-	if (str[i] == '-' || str[i] == '+')
-	{
-		if (str[i++] == '-')
-			sign = -1;
-	}
-	if (!str[i])
-		return (0);
-	while (str[i])
-	{
-		if (!ft_isdigit(str[i]))
-			return (0);
-		res = res * 10 + (str[i++] - '0');
-		if ((sign == 1 && res > 9223372036854775807ULL)
-			|| (sign == -1 && res > 9223372036854775808ULL))
-			return (0);
-	}
-	return (1);
-}
-
-static long long	ft_atoll(const char *str)
-{
-	unsigned long long	res;
-	int					i;
-	int					sign;
-
-	i = 0;
-	res = 0;
-	sign = 1;
-	while (str[i] == ' ' || (str[i] >= '\t' && str[i] <= '\r'))
-		i++;
-	if (str[i] == '-' || str[i] == '+')
-	{
-		if (str[i++] == '-')
-			sign = -1;
-	}
-	while (str[i] >= '0' && str[i] <= '9')
-	{
-		res = res * 10 + (str[i++] - '0');
-	}
-	return ((long long)res * sign);
-}
 
 int	ft_exit(char **args, int *last_status)
 {

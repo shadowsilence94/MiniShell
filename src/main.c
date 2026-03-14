@@ -14,14 +14,28 @@
 
 volatile sig_atomic_t	g_signal_received = 0;
 
-/*
- * Stub function to just print what we read for now
- */
+static void	print_redirections(t_command *cmd)
+{
+	t_infile	*in;
+	t_outfile	*out;
+
+	in = cmd->infiles;
+	while (in)
+	{
+		printf("  Infile: %s (Heredoc: %d)\n", in->filename, in->is_heredoc);
+		in = in->next;
+	}
+	out = cmd->outfiles;
+	while (out)
+	{
+		printf("  Outfile: %s (Append: %d)\n", out->filename, out->is_append);
+		out = out->next;
+	}
+}
+
 void	print_commands(t_command *cmd)
 {
 	int	i;
-	t_infile	*in;
-	t_outfile	*out;
 
 	while (cmd)
 	{
@@ -35,18 +49,7 @@ void	print_commands(t_command *cmd)
 				i++;
 			}
 		}
-		in = cmd->infiles;
-		while (in)
-		{
-			printf("  Infile: %s (Heredoc: %d)\n", in->filename, in->is_heredoc);
-			in = in->next;
-		}
-		out = cmd->outfiles;
-		while (out)
-		{
-			printf("  Outfile: %s (Append: %d)\n", out->filename, out->is_append);
-			out = out->next;
-		}
+		print_redirections(cmd);
 		if (cmd->next)
 			printf("  | PIPE |\n");
 		cmd = cmd->next;
@@ -80,7 +83,6 @@ int	main(int argc, char **argv, char **envp)
 	/* Placeholder: Should copy envp to our own list/array */
 	env_vars = envp;
 	last_status = 0;
-
 	setup_signals();
 	while (1)
 	{

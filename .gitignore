@@ -5,3 +5,4 @@ TEST_COMMANDS.md
 obj/
 minishell
 *.o
+test_script.sh

@@ -92,7 +92,16 @@ t_token	*tokenize(char *line, t_exec_params *params)
 		else if (ft_strchr("|&<>()", line[i]))
 			i = handle_symbol(line, i, &head);
 		else
+		{
 			i = handle_word(line, i, &head, params);
+			if (i == -1)
+			{
+				ft_putendl_fd("minishell: syntax error: unclosed quote", 2);
+				*params->last_status = 2;
+				free_tokens(head);
+				return (NULL);
+			}
+		}
 	}
 	return (head);
 }

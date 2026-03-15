@@ -1,10 +1,10 @@
-&
-&&
 (
 *
+&
+&&
 a.out
-bash.supp
 bash_outfiles
+bash.supp
 bonus
 bonus_bonus
 builtins
@@ -29,8 +29,8 @@ pipes
 printer
 redirects
 syntax
-test.supp
 test_files
+test.supp
 tester
 valgrind.supp
 wildcards

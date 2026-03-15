@@ -16,16 +16,17 @@ int	get_word_end(char *line, int i)
 {
 	char	quote;
 
-	while (line[i] && !is_whitespace(line[i]) && line[i] != '|'
-		&& line[i] != '<' && line[i] != '>')
+	while (line[i] && !is_whitespace(line[i])
+		&& !ft_strchr("|<>&()", line[i]))
 	{
 		if (line[i] == '\'' || line[i] == '"')
 		{
 			quote = line[i++];
 			while (line[i] && line[i] != quote)
 				i++;
-			if (line[i])
-				i++;
+			if (!line[i])
+				return (-1);
+			i++;
 		}
 		else
 			i++;
@@ -40,6 +41,8 @@ int	handle_word(char *line, int i, t_token **head, t_exec_params *params)
 	char	*expanded;
 
 	end = get_word_end(line, i);
+	if (end == -1)
+		return (-1);
 	word = ft_substr(line, i, end - i);
 	expanded = expand_status(word, params);
 	if (expanded)

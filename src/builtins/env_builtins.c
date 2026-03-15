@@ -28,37 +28,43 @@ static int	is_valid_identifier(char *s)
 	return (1);
 }
 
-static int	export_error(char *arg)
+static int	export_one(char *arg, char ***envp)
 {
-	ft_putstr_fd("minishell: export: `", 2);
-	ft_putstr_fd(arg, 2);
-	ft_putendl_fd("': not a valid identifier", 2);
-	return (1);
+	char	*key;
+	char	*equal;
+
+	equal = ft_strchr(arg, '=');
+	if (equal)
+		key = ft_substr(arg, 0, equal - arg);
+	else
+		key = ft_strdup(arg);
+	if (!is_valid_identifier(key))
+	{
+		ft_putstr_fd("minishell: export: `", 2);
+		ft_putstr_fd(arg, 2);
+		ft_putendl_fd("': not a valid identifier", 2);
+		free(key);
+		return (1);
+	}
+	if (equal)
+		set_env(envp, key, equal + 1);
+	free(key);
+	return (0);
 }
 
 int	ft_export(char **args, char ***envp)
 {
 	int		i;
 	int		ret;
-	char	*key;
-	char	*equal;
 
 	if (!args[1])
-		return (ft_env(*envp));
+		return (print_export(*envp), 0);
 	i = 1;
 	ret = 0;
 	while (args[i])
 	{
-		equal = ft_strchr(args[i], '=');
-		if (equal)
-			key = ft_substr(args[i], 0, equal - args[i]);
-		else
-			key = ft_strdup(args[i]);
-		if (!is_valid_identifier(key))
-			ret = export_error(args[i]);
-		else if (equal)
-			set_env(envp, key, equal + 1);
-		free(key);
+		if (export_one(args[i], envp))
+			ret = 1;
 		i++;
 	}
 	return (ret);

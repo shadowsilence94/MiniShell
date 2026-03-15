@@ -166,6 +166,7 @@ long long	ft_atoll(const char *str);
  */
 void		free_command_list(t_command *cmd_list);
 void		free_split(char **split);
+void		print_export(char **envp);
 
 /*
  * Environment Utilities

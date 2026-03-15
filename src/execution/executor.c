@@ -58,14 +58,19 @@ static void	handle_single_cmd(t_command *cmd, char ***envp, int *last_status)
 static void	execute_command_node(t_command *curr, char ***envp,
 				int *last_status)
 {
-	if (!curr->args && curr->redirs)
+	if (!curr->args && curr->redirs && !curr->next)
 		handle_single_cmd(curr, envp, last_status);
-	else if (curr->args && curr->args[0])
+	else if (curr->args && curr->args[0] && !curr->next
+		&& is_builtin(curr->args[0]))
 	{
-		if (handle_assignment(curr, envp, last_status))
-			(void)0;
-		else if (!curr->next && is_builtin(curr->args[0]))
+		if (!handle_assignment(curr, envp, last_status))
 			handle_single_cmd(curr, envp, last_status);
+	}
+	else if ((curr->args && curr->args[0]) || curr->redirs || curr->next)
+	{
+		if (curr->args && curr->args[0]
+			&& handle_assignment(curr, envp, last_status))
+			(void)0;
 		else
 			handle_process_loop(curr, envp, last_status);
 	}

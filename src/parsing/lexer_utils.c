@@ -34,6 +34,36 @@ int	get_word_end(char *line, int i)
 	return (i);
 }
 
+static int	last_is_redir(t_token *head)
+{
+	t_token	*tmp;
+
+	if (!head)
+		return (0);
+	tmp = head;
+	while (tmp->next)
+		tmp = tmp->next;
+	return (tmp->type >= TOKEN_REDIRECT_IN && tmp->type <= TOKEN_HEREDOC);
+}
+
+static void	add_word_token(t_token **head, char *word, char *expanded)
+{
+	if (expanded && last_is_redir(*head))
+	{
+		if ((ft_strchr(expanded, ' ') && !ft_strchr(word, '\'')
+				&& !ft_strchr(word, '"')) || (ft_strchr(expanded, '\2')
+				&& count_wildcard_matches(expanded) > 1))
+		{
+			free(expanded);
+			expanded = ft_strdup("");
+		}
+	}
+	if (expanded)
+		append_token(head, new_token(expanded, TOKEN_WORD));
+	else if (last_is_redir(*head))
+		append_token(head, new_token(ft_strdup(""), TOKEN_WORD));
+}
+
 int	handle_word(char *line, int i, t_token **head, t_exec_params *params)
 {
 	int		end;
@@ -45,16 +75,7 @@ int	handle_word(char *line, int i, t_token **head, t_exec_params *params)
 		return (-1);
 	word = ft_substr(line, i, end - i);
 	expanded = expand_status(word, params);
-	if (expanded)
-	{
-		if (has_unquoted_wildcard(word))
-		{
-			append_token(head, expand_wildcard(expanded));
-			free(expanded);
-		}
-		else
-			append_token(head, new_token(expanded, TOKEN_WORD));
-	}
+	add_word_token(head, word, expanded);
 	free(word);
 	return (end);
 }

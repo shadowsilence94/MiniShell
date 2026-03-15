@@ -29,14 +29,24 @@ static char	*get_var_name(char *val, int *i)
 	return (name);
 }
 
-static char	*handle_expansion(char *res, char *val, int *i, t_exec_params *p)
+static char	*handle_expansion(char *res, char *val, int *i, t_exec_params *p, bool dq)
 {
 	char	*name;
 	char	*var_val;
 	char	*tmp;
+	int		j;
 
 	name = get_var_name(val, i);
 	var_val = get_var_value(name, *p->envp, *p->last_status);
+	if (!var_val)
+		var_val = ft_strdup("");
+	if (!dq)
+	{
+		j = -1;
+		while (var_val[++j])
+			if (var_val[j] == '*')
+				var_val[j] = '\2';
+	}
 	tmp = ft_strjoin(res, var_val);
 	free(res);
 	free(name);
@@ -78,14 +88,19 @@ char	*expand_status(char *val, t_exec_params *params)
 			toggle_quotes(val[i++], &q[0], &q[1]);
 		}
 		else if (is_expandable(val, i, q[0]))
-			res = handle_expansion(res, val, &i, params);
+			res = handle_expansion(res, val, &i, params, q[1]);
+		else if (val[i] == '*' && !q[0] && !q[1])
+		{
+			res = append_char(res, '\2');
+			i++;
+		}
 		else
 			res = append_char(res, val[i++]);
 	}
 	if (res[0] == '\0' && !q[2])
 	{
 		free(res);
-		return (NULL);
+		return (ft_strdup("\1"));
 	}
 	return (res);
 }

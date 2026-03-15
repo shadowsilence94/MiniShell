@@ -30,6 +30,8 @@ void	add_argument(t_command *cmd, char *arg)
 	char	**new_args;
 	int		i;
 
+	if (arg && arg[0] == '\1' && arg[1] == '\0')
+		return ;
 	i = 0;
 	while (cmd->args && cmd->args[i])
 		i++;

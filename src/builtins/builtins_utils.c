@@ -104,17 +104,20 @@ void	print_export(char **envp)
 	i = 0;
 	while (envp[i])
 	{
-		ft_putstr_fd("declare -x ", STDOUT_FILENO);
-		eq = ft_strchr(envp[i], '=');
-		if (eq)
+		if (ft_strncmp(envp[i], "_=", 2) != 0 && ft_strncmp(envp[i], "_", 2) != 0)
 		{
-			write(STDOUT_FILENO, envp[i], eq - envp[i] + 1);
-			ft_putstr_fd("\"", STDOUT_FILENO);
-			ft_putstr_fd(eq + 1, STDOUT_FILENO);
-			ft_putendl_fd("\"", STDOUT_FILENO);
+			ft_putstr_fd("declare -x ", STDOUT_FILENO);
+			eq = ft_strchr(envp[i], '=');
+			if (eq)
+			{
+				write(STDOUT_FILENO, envp[i], eq - envp[i] + 1);
+				ft_putstr_fd("\"", STDOUT_FILENO);
+				ft_putstr_fd(eq + 1, STDOUT_FILENO);
+				ft_putendl_fd("\"", STDOUT_FILENO);
+			}
+			else
+				ft_putendl_fd(envp[i], STDOUT_FILENO);
 		}
-		else
-			ft_putendl_fd(envp[i], STDOUT_FILENO);
 		i++;
 	}
 }

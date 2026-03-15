@@ -72,7 +72,7 @@ int	handle_redirections(t_command *cmd)
 	redir = cmd->redirs;
 	while (redir)
 	{
-		if (redir->type != REDIR_HEREDOC && check_ambiguous(redir))
+		if (check_ambiguous(redir))
 			return (1);
 		if (redir->type == REDIR_IN)
 		{

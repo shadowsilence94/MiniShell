@@ -129,6 +129,9 @@ int			handle_word(char *line, int i, t_token **head,
 				t_exec_params *params);
 t_token		*expand_wildcard(char *pattern);
 int			has_unquoted_wildcard(char *str);
+int			has_unquoted_var(char *str);
+int			count_wildcard_matches(char *pattern);
+void		expand_cmd_wildcards(t_command *cmd);
 char		*append_char(char *res, char c);
 t_token		*extract_subtokens(t_token *start, t_token *end);
 

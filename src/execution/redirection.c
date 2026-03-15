@@ -55,6 +55,16 @@ static int	handle_out(t_redir *redir)
 	return (0);
 }
 
+static int	check_ambiguous(t_redir *redir)
+{
+	if (!redir->filename || !redir->filename[0])
+	{
+		ft_putendl_fd("minishell: ambiguous redirect", 2);
+		return (1);
+	}
+	return (0);
+}
+
 int	handle_redirections(t_command *cmd)
 {
 	t_redir	*redir;
@@ -62,6 +72,8 @@ int	handle_redirections(t_command *cmd)
 	redir = cmd->redirs;
 	while (redir)
 	{
+		if (redir->type != REDIR_HEREDOC && check_ambiguous(redir))
+			return (1);
 		if (redir->type == REDIR_IN)
 		{
 			if (handle_in(redir))

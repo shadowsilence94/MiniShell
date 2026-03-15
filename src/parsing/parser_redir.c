@@ -31,10 +31,13 @@ static int	is_logic_op(t_token_type type)
 	return (type == TOKEN_PIPE || type == TOKEN_AND || type == TOKEN_OR);
 }
 
-static int	check_parens_and_logic(t_token *tmp, int *parens)
+static int	check_parens_and_logic(t_token *tmp, t_token *prev, int *parens)
 {
 	if (tmp->type == TOKEN_L_PAREN)
 	{
+		if (prev && (prev->type == TOKEN_WORD
+				|| prev->type == TOKEN_R_PAREN))
+			return (print_err("("));
 		(*parens)++;
 		if (tmp->next && tmp->next->type == TOKEN_R_PAREN)
 			return (print_err(")"));
@@ -55,6 +58,7 @@ static int	check_parens_and_logic(t_token *tmp, int *parens)
 int	validate_syntax(t_token *tokens)
 {
 	t_token	*tmp;
+	t_token	*prev;
 	int		parens;
 
 	parens = 0;
@@ -62,13 +66,15 @@ int	validate_syntax(t_token *tokens)
 		return (0);
 	if (is_logic_op(tokens->type) || tokens->type == TOKEN_R_PAREN)
 		return (print_err(tokens->value));
+	prev = NULL;
 	tmp = tokens;
 	while (tmp)
 	{
-		if (check_parens_and_logic(tmp, &parens))
+		if (check_parens_and_logic(tmp, prev, &parens))
 			return (1);
 		if (check_redir_syntax(tmp))
 			return (1);
+		prev = tmp;
 		tmp = tmp->next;
 	}
 	if (parens > 0)

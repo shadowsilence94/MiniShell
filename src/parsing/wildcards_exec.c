@@ -16,29 +16,11 @@ static int	count_expanded(char **args)
 {
 	int		i;
 	int		c;
-	char	*tmp;
-	t_token	*list;
-	t_token	*curr;
 
 	i = -1;
 	c = 0;
 	while (args[++i])
-	{
-		if (ft_strchr(args[i], '\2'))
-		{
-			tmp = ft_strdup(args[i]);
-			while (ft_strchr(tmp, '\2'))
-				*ft_strchr(tmp, '\2') = '*';
-			list = expand_wildcard(tmp);
-			curr = list;
-			while (curr && ++c)
-				curr = curr->next;
-			free_tokens(list);
-			free(tmp);
-		}
-		else
-			c++;
-	}
+		c += get_expanded_count(args[i]);
 	return (c);
 }
 
@@ -46,29 +28,13 @@ static void	fill_expanded(char **args, char **new_args)
 {
 	int		i;
 	int		c;
-	char	*tmp;
-	t_token	*list;
-	t_token	*curr;
 
 	i = -1;
 	c = 0;
 	while (args[++i])
 	{
 		if (ft_strchr(args[i], '\2'))
-		{
-			tmp = ft_strdup(args[i]);
-			while (ft_strchr(tmp, '\2'))
-				*ft_strchr(tmp, '\2') = '*';
-			list = expand_wildcard(tmp);
-			curr = list;
-			while (curr)
-			{
-				new_args[c++] = ft_strdup(curr->value);
-				curr = curr->next;
-			}
-			free_tokens(list);
-			free(tmp);
-		}
+			fill_wildcard_list(args[i], new_args, &c);
 		else
 			new_args[c++] = ft_strdup(args[i]);
 	}
@@ -90,23 +56,10 @@ static char	**get_expanded_args(char **args)
 	return (new_args);
 }
 
-void	expand_cmd_wildcards(t_command *cmd)
+static void	expand_redir_wildcards(t_redir *r)
 {
-	char	**new_args;
-	t_redir	*r;
 	t_token	*list;
-	int		i;
 
-	if (cmd->args)
-	{
-		new_args = get_expanded_args(cmd->args);
-		i = -1;
-		while (cmd->args[++i])
-			free(cmd->args[i]);
-		free(cmd->args);
-		cmd->args = new_args;
-	}
-	r = cmd->redirs;
 	while (r)
 	{
 		if (r->filename && ft_strchr(r->filename, '\2'))
@@ -129,6 +82,23 @@ void	expand_cmd_wildcards(t_command *cmd)
 		}
 		r = r->next;
 	}
+}
+
+void	expand_cmd_wildcards(t_command *cmd)
+{
+	char	**new_args;
+	int		i;
+
+	if (cmd->args)
+	{
+		new_args = get_expanded_args(cmd->args);
+		i = -1;
+		while (cmd->args[++i])
+			free(cmd->args[i]);
+		free(cmd->args);
+		cmd->args = new_args;
+	}
+	expand_redir_wildcards(cmd->redirs);
 	if (cmd->sub_cmd)
 		expand_cmd_wildcards(cmd->sub_cmd);
 	if (cmd->next)

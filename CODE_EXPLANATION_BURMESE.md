@@ -251,12 +251,9 @@ char	*expand_status(char *val, t_exec_params *params)
 	while (val && val[i])
 	{
 		if ((val[i] == '\'' && !q[1]) || (val[i] == '"' && !q[0]))
-		{
-			q[2] = true;
-			toggle_quotes(val[i++], &q[0], &q[1]);
-		}
+			handle_status_quotes(val[i], q, &i);
 		else if (is_expandable(val, i, q[0])) // $Expansion တွေ့လျှင်
-			res = handle_expansion(res, val, &i, params, q[1]);
+			res = apply_expansion(res, handle_expansion(val, &i, params, q[1]));
 		else if (val[i] == '*' && !q[0] && !q[1]) // Unquoted * တွေ့လျှင်
 		{
 			res = append_char(res, '\2'); // Execution-time globbing အတွက် \2
@@ -272,6 +269,8 @@ char	*expand_status(char *val, t_exec_params *params)
 	}
 	return (res);
 }
+
+**မှတ်ချက်:** Norminette စည်းကမ်း (၅ ဖိုင်လျှင် ၅ function) ပြည့်မီရန် `toggle_quotes`, `is_expandable`, `handle_status_quotes`, `apply_expansion` နှင့် `append_char` တို့ကို `src/parsing/expand_helpers.c` သို့ ပြောင်းရွှေ့ထားပါသည်။
 ```
 
 ---
@@ -776,7 +775,7 @@ static int	export_one(char *arg, char ***envp)
 static void	unset_var(char ***envp, char *key)
 {
     // ၁။ key ကို ပတ်ရှာသည်
-	// ၂။ တွေ့လျှင် ထိုနေရာကို free လုပ်ပြီး array ထဲမှ ကျန်တာများကို ရှေ့တိုးသည်
+	// ၂။ တွေ့လျှလျှင် ထိုနေရာကို free လုပ်ပြီး array ထဲမှ ကျန်တာများကို ရှေ့တိုးသည်
 }
 ```
 
@@ -986,20 +985,53 @@ t_token	*expand_wildcard(char *pattern)
 ## ၂၂။ `src/signals.c` (Signal Management)
 
 ```c
-// Ctrl+C နှိပ်လိုက်လျှင် prompt အသစ်တစ်ခု ပြပေးခြင်း
+// Ctrl+C သို့မဟုတ် Ctrl+\ အချက်ပြချက်များကို ကိုင်တွယ်ခြင်း
+void	handle_sigint(int sig)
+{
+	(void)sig;
+	g_signal_received = 1;
+	write(1, "\n", 1);
+	rl_on_new_line();
+	rl_replace_line("", 0);
+	rl_redisplay();
+}
+
 void	setup_signals(void)
 {
-	struct sigaction	sa;
-
-	sa.sa_handler = &handle_sigint; // Ctrl+C အတွက် handle လုပ်မည့် function
-	sigemptyset(&sa.sa_mask);
-	sa.sa_flags = SA_RESTART;
-	sigaction(SIGINT, &sa, NULL); // SIGINT (Ctrl+C) ကို register လုပ်သည်
-    
-    // SIGQUIT (Ctrl+\) ကို ignore လုပ်ထားရန် (minishell မှာ ဘာမှမဖြစ်စေရန်)
-	signal(SIGQUIT, SIG_IGN);
+	signal(SIGINT, handle_sigint);  // Ctrl+C handle လုပ်သည်
+	signal(SIGQUIT, SIG_IGN);       // Ctrl+\ ကို ignore လုပ်သည်
 }
 ```
+
+---
+
+## ၂၃။ `src/parsing/expand_helpers.c` (Expansion Helpers)
+
+ဤဖိုင်တွင် `expand_utils.c` မှ ဖယ်ထုတ်ထားသော helper function ၅ ခု ပါဝင်သည်။
+
+- `toggle_quotes`: Single/Double quotes အဖွင့်အပိတ်ကို ပြောင်းလဲပေးသည်။
+- `apply_expansion`: Variable တန်ဖိုးကို လက်ရှိ result string နှင့် ပေါင်းစည်းပေးပြီး memory ရှင်းလင်းပေးသည်။
+- `is_expandable`: Character သည် expansion လုပ်ရန် သင့်တော်သော `$` ဟုတ်မဟုတ် စစ်ဆေးသည်။
+- `handle_status_quotes`: Quote များတွေ့လျှင် quote state ကို update လုပ်ပြီး index ကို တိုးပေးသည်။
+- `append_char`: String တစ်ခု၏ အဆုံးတွင် character တစ်လုံး ပေါင်းထည့်ပေးသည်။
+
+---
+
+## ၂၄။ `src/parsing/wildcard_helpers.c` (Wildcard Helpers)
+
+ဤဖိုင်တွင် Wildcard logic အတွက် လိုအပ်သော helper function ၅ ခု ပါဝင်သည်။
+
+- `has_unquoted_wildcard`: String ထဲတွင် quote မပါသော `*` ပါမပါ စစ်ဆေးသည်။
+- `has_unquoted_var`: String ထဲတွင် quote မပါသော `$` ပါမပါ စစ်ဆေးသည်။
+- `get_expanded_count`: Wildcard pattern တစ်ခုသည် file ဘယ်နှစ်ခုနှင့် match ဖြစ်သည်ကို ရေတွက်သည်။
+- `clean_marker`: String ထဲရှိ `\2` marker များကို မူလ `*` သို့ ပြန်ပြောင်းပေးသည်။
+- `fill_wildcard_list`: Pattern နှင့် match ဖြစ်သော file နမည်များကို argument list ထဲသို့ ဖြည့်သွင်းပေးသည်။
+
+---
+
+## ၂၅။ `src/parsing/token_utils.c` (Updated)
+
+ဤဖိုင်သည် Token management အတွက် ဖြစ်ပြီး `sort_strings` ကိုလည်း ဤနေရာသို့ ပြောင်းရွှေ့ထားသည်။
 
 ---
 

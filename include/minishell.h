@@ -134,6 +134,15 @@ int			count_wildcard_matches(char *pattern);
 void		expand_cmd_wildcards(t_command *cmd);
 char		*append_char(char *res, char c);
 t_token		*extract_subtokens(t_token *start, t_token *end);
+void		sort_strings(char **arr, int count);
+char		*prepare_pattern(char *pattern);
+void		clean_marker(char *pattern);
+int			get_expanded_count(char *arg);
+void		fill_wildcard_list(char *arg, char **new_args, int *c);
+void		toggle_quotes(char c, bool *s_quote, bool *d_quote);
+char		*apply_expansion(char *res, char *var_val);
+bool		is_expandable(char *v, int i, bool sq);
+void		handle_status_quotes(char c, bool q[3], int *i);
 
 /*
  * Execution

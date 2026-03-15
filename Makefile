@@ -30,7 +30,9 @@ SRC_FILES   = main.c \
 			parsing/token_utils.c \
 			parsing/parser_utils.c \
 			parsing/expand_utils.c \
+			parsing/expand_helpers.c \
 			parsing/wildcards.c \
+			parsing/wildcard_helpers.c \
 			parsing/wildcards_exec.c \
 			execution/executor.c \
 			execution/exec_loop.c \

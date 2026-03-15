@@ -1,10 +1,10 @@
-&
-&&
 (
 *
+&
+&&
 a.out
-bash.supp
 bash_outfiles
+bash.supp
 bonus
 bonus_bonus
 builtins
@@ -12,7 +12,6 @@ correct
 crazy
 errors
 extras
-f1
 f1 1233
 f1 f2 f3
 local.supp
@@ -29,8 +28,8 @@ pipes
 printer
 redirects
 syntax
-test.supp
 test_files
+test.supp
 tester
 valgrind.supp
 wildcards

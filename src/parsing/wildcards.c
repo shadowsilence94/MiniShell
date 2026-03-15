@@ -14,134 +14,93 @@
 #include <dirent.h>
 #include <fnmatch.h>
 
-void	sort_strings(char **arr, int count)
+char	*prepare_pattern(char *pattern)
 {
-	int		i;
-	int		j;
+	char	*p;
 	char	*tmp;
 
-	i = 0;
-	while (i < count - 1)
+	p = ft_strdup(pattern);
+	if (!p)
+		return (NULL);
+	tmp = p;
+	while (*tmp)
 	{
-		j = i + 1;
-		while (j < count)
-		{
-			if (ft_strncmp(arr[i], arr[j], 1024) > 0)
-			{
-				tmp = arr[i];
-				arr[i] = arr[j];
-				arr[j] = tmp;
-			}
-			j++;
-		}
-		i++;
+		if (*tmp == '\2')
+			*tmp = '*';
+		tmp++;
 	}
-}
-
-int	has_unquoted_wildcard(char *str)
-{
-	int		i;
-	bool	q[2];
-
-	i = -1;
-	q[0] = false;
-	q[1] = false;
-	while (str[++i])
-	{
-		if (str[i] == '\'' && !q[1])
-			q[0] = !q[0];
-		else if (str[i] == '"' && !q[0])
-			q[1] = !q[1];
-		else if (str[i] == '*' && !q[0] && !q[1])
-			return (1);
-	}
-	return (0);
-}
-
-int	has_unquoted_var(char *str)
-{
-	int		i;
-	bool	q[2];
-
-	i = -1;
-	q[0] = false;
-	q[1] = false;
-	while (str[++i])
-	{
-		if (str[i] == '\'' && !q[1])
-			q[0] = !q[0];
-		else if (str[i] == '"' && !q[0])
-			q[1] = !q[1];
-		else if (str[i] == '$' && !q[0] && str[i + 1])
-			return (1);
-	}
-	return (0);
+	return (p);
 }
 
 int	count_wildcard_matches(char *pattern)
 {
 	DIR				*dir;
-	struct dirent	*entry;
+	struct dirent	*e;
 	int				count;
 	char			*p;
 
-	count = 0;
-	p = ft_strdup(pattern);
-	while (ft_strchr(p, '\2'))
-		*ft_strchr(p, '\2') = '*';
+	p = prepare_pattern(pattern);
 	dir = opendir(".");
-	if (!dir)
+	if (!p || !dir)
 		return (free(p), 0);
-	entry = readdir(dir);
-	while (entry)
+	count = 0;
+	e = readdir(dir);
+	while (e)
 	{
-		if (entry->d_name[0] != '.' || p[0] == '.')
-			if (fnmatch(p, entry->d_name, 0) == 0)
+		if (e->d_name[0] != '.' || p[0] == '.')
+			if (fnmatch(p, e->d_name, 0) == 0)
 				count++;
-		entry = readdir(dir);
+		e = readdir(dir);
 	}
 	closedir(dir);
 	return (free(p), count);
 }
 
+static t_token	*matches_to_tokens(char **matches, int count)
+{
+	t_token	*head;
+	int		i;
+
+	head = NULL;
+	sort_strings(matches, count);
+	i = -1;
+	while (++i < count)
+		append_token(&head, new_token(matches[i], TOKEN_WORD));
+	return (head);
+}
+
+static t_token	*get_final_tokens(char **matches, int count, char *pattern)
+{
+	if (count == 0)
+	{
+		clean_marker(pattern);
+		return (new_token(ft_strdup(pattern), TOKEN_WORD));
+	}
+	return (matches_to_tokens(matches, count));
+}
+
 t_token	*expand_wildcard(char *pattern)
 {
 	DIR				*dir;
-	t_token			*head;
 	char			*matches[1024];
 	int				c;
-	int				i;
 	struct dirent	*e;
 	char			*p;
 
-	c = 0;
-	head = NULL;
-	p = ft_strdup(pattern);
-	while (ft_strchr(p, '\2'))
-		*ft_strchr(p, '\2') = '*';
+	p = prepare_pattern(pattern);
 	dir = opendir(".");
-	if (!dir)
+	if (!p || !dir)
 		return (free(p), NULL);
+	c = 0;
 	e = readdir(dir);
 	while (e && c < 1024)
 	{
-		if (e->d_name[0] != '.' || p[0] == '.')
-			if (fnmatch(p, e->d_name, 0) == 0)
-				matches[c++] = ft_strdup(e->d_name);
+		if ((e->d_name[0] != '.' || p[0] == '.')
+			&& fnmatch(p, e->d_name, 0) == 0)
+			matches[c++] = ft_strdup(e->d_name);
 		e = readdir(dir);
 	}
 	closedir(dir);
-	if (c == 0)
-	{
-		i = -1;
-		while (pattern[++i])
-			if (pattern[i] == '\2')
-				pattern[i] = '*';
-		return (free(p), new_token(ft_strdup(pattern), TOKEN_WORD));
-	}
-	sort_strings(matches, c);
-	i = -1;
-	while (++i < c)
-		append_token(&head, new_token(matches[i], TOKEN_WORD));
-	return (free(p), head);
+	free(p);
+	return (get_final_tokens(matches, c, pattern));
 }

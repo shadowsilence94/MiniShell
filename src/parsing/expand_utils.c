@@ -29,15 +29,15 @@ static char	*get_var_name(char *val, int *i)
 	return (name);
 }
 
-static char	*handle_expansion(char *res, char *val, int *i, t_exec_params *p, bool dq)
+static char	*handle_expansion(char *val, int *i, t_exec_params *p, bool dq)
 {
 	char	*name;
 	char	*var_val;
-	char	*tmp;
 	int		j;
 
 	name = get_var_name(val, i);
 	var_val = get_var_value(name, *p->envp, *p->last_status);
+	free(name);
 	if (!var_val)
 		var_val = ft_strdup("");
 	if (!dq)
@@ -47,28 +47,7 @@ static char	*handle_expansion(char *res, char *val, int *i, t_exec_params *p, bo
 			if (var_val[j] == '*')
 				var_val[j] = '\2';
 	}
-	tmp = ft_strjoin(res, var_val);
-	free(res);
-	free(name);
-	free(var_val);
-	return (tmp);
-}
-
-static void	toggle_quotes(char c, bool *s_quote, bool *d_quote)
-{
-	if (c == '\'' && !*d_quote)
-		*s_quote = !*s_quote;
-	else if (c == '"' && !*s_quote)
-		*d_quote = !*d_quote;
-}
-
-static bool	is_expandable(char *v, int i, bool sq)
-{
-	if (v[i] != '$' || sq || !v[i + 1])
-		return (false);
-	if (ft_isalnum(v[i + 1]) || v[i + 1] == '_' || v[i + 1] == '?')
-		return (true);
-	return (false);
+	return (var_val);
 }
 
 char	*expand_status(char *val, t_exec_params *params)
@@ -83,12 +62,9 @@ char	*expand_status(char *val, t_exec_params *params)
 	while (val && val[i])
 	{
 		if ((val[i] == '\'' && !q[1]) || (val[i] == '"' && !q[0]))
-		{
-			q[2] = true;
-			toggle_quotes(val[i++], &q[0], &q[1]);
-		}
+			handle_status_quotes(val[i], q, &i);
 		else if (is_expandable(val, i, q[0]))
-			res = handle_expansion(res, val, &i, params, q[1]);
+			res = apply_expansion(res, handle_expansion(val, &i, params, q[1]));
 		else if (val[i] == '*' && !q[0] && !q[1])
 		{
 			res = append_char(res, '\2');
@@ -98,9 +74,6 @@ char	*expand_status(char *val, t_exec_params *params)
 			res = append_char(res, val[i++]);
 	}
 	if (res[0] == '\0' && !q[2])
-	{
-		free(res);
-		return (ft_strdup("\1"));
-	}
+		return (free(res), ft_strdup("\1"));
 	return (res);
 }

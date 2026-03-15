@@ -6,7 +6,7 @@
 /*   By: hko-ko <hko-ko@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/26 12:00:00 by hko-ko            #+#    #+#             */
-/*   Updated: 2026/03/14 21:10:00 by hko-ko           ###   ########.fr       */
+/*   Updated: 2026/03/15 12:35:00 by hko-ko           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,22 +53,34 @@ void	free_tokens(t_token *tokens)
 	}
 }
 
-char	*append_char(char *res, char c)
-{
-	char	tmp[2];
-	char	*new_res;
-
-	tmp[0] = c;
-	tmp[1] = '\0';
-	new_res = ft_strjoin(res, tmp);
-	free(res);
-	return (new_res);
-}
-
 int	print_err(char *token)
 {
 	ft_putstr_fd("minishell: syntax error near unexpected token `", 2);
 	ft_putstr_fd(token, 2);
 	ft_putendl_fd("'", 2);
 	return (1);
+}
+
+void	sort_strings(char **arr, int count)
+{
+	int		i;
+	int		j;
+	char	*tmp;
+
+	i = 0;
+	while (i < count - 1)
+	{
+		j = i + 1;
+		while (j < count)
+		{
+			if (ft_strncmp(arr[i], arr[j], 1024) > 0)
+			{
+				tmp = arr[i];
+				arr[i] = arr[j];
+				arr[j] = tmp;
+			}
+			j++;
+		}
+		i++;
+	}
 }

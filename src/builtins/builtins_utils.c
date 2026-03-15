@@ -104,7 +104,8 @@ void	print_export(char **envp)
 	i = 0;
 	while (envp[i])
 	{
-		if (ft_strncmp(envp[i], "_=", 2) != 0 && ft_strncmp(envp[i], "_", 2) != 0)
+		if (ft_strncmp(envp[i], "_=", 2) != 0
+			&& ft_strncmp(envp[i], "_", 2) != 0)
 		{
 			ft_putstr_fd("declare -x ", STDOUT_FILENO);
 			eq = ft_strchr(envp[i], '=');

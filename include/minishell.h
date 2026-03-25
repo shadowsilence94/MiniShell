@@ -161,6 +161,7 @@ int			handle_redirections(t_command *cmd);
 void		wait_for_children(pid_t last_pid, int *last_status);
 void		child_process(t_command *cmd, t_exec_params *params);
 int			is_dir(char *path);
+void		exec_script(char *path, char **args, char **envp);
 
 /*
  * Builtins

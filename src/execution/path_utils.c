@@ -56,3 +56,24 @@ char	*find_command_path(char *cmd, char **envp)
 	free_split(paths);
 	return (res);
 }
+
+void	exec_script(char *path, char **args, char **envp)
+{
+	char	**new_args;
+	int		i;
+	int		j;
+
+	i = 0;
+	while (args[i])
+		i++;
+	new_args = malloc(sizeof(char *) * (i + 2));
+	if (!new_args)
+		exit(1);
+	new_args[0] = ft_strdup("/bin/sh");
+	new_args[1] = ft_strdup(path);
+	j = 0;
+	while (args[++j])
+		new_args[j + 1] = ft_strdup(args[j]);
+	new_args[j + 1] = NULL;
+	execve("/bin/sh", new_args, envp);
+}

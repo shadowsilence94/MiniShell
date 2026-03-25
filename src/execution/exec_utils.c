@@ -78,8 +78,10 @@ static void	run_command(t_command *cmd, char ***envp)
 			cmd_not_found(cmd->args[0]);
 	}
 	execve(path, cmd->args, *envp);
-	perror("execve");
-	exit(1);
+	if (errno == ENOEXEC)
+		exec_script(path, cmd->args, *envp);
+	perror(path);
+	exit(126);
 }
 
 void	child_process(t_command *cmd, t_exec_params *params)

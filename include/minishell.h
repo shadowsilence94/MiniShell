@@ -48,6 +48,7 @@ typedef enum s_token_type
 	TOKEN_OR,
 	TOKEN_L_PAREN,
 	TOKEN_R_PAREN,
+	TOKEN_SEMI,
 	TOKEN_EOF
 }	t_token_type;
 
@@ -88,7 +89,8 @@ typedef enum e_logical_op
 {
 	LOGIC_NONE,
 	LOGIC_AND,
-	LOGIC_OR
+	LOGIC_OR,
+	LOGIC_SEQ
 }	t_logical_op;
 
 /*

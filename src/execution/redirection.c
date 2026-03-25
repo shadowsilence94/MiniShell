@@ -55,13 +55,36 @@ static int	handle_out(t_redir *redir)
 	return (0);
 }
 
-static int	check_ambiguous(t_redir *redir)
+static void	read_heredoc(int fd, char *delim)
 {
-	if (!redir->filename || !redir->filename[0])
+	char	*line;
+
+	while (1)
 	{
-		ft_putendl_fd("minishell: ambiguous redirect", 2);
-		return (1);
+		line = readline("> ");
+		if (!line || ft_strncmp(line, delim,
+				ft_strlen(delim) + 1) == 0)
+		{
+			free(line);
+			break ;
+		}
+		write(fd, line, ft_strlen(line));
+		write(fd, "\n", 1);
+		free(line);
 	}
+}
+
+static int	handle_heredoc(t_redir *redir)
+{
+	int	fd[2];
+
+	if (pipe(fd) == -1)
+		return (1);
+	read_heredoc(fd[1], redir->filename);
+	close(fd[1]);
+	if (dup2(fd[0], STDIN_FILENO) == -1)
+		return (close(fd[0]), 1);
+	close(fd[0]);
 	return (0);
 }
 
@@ -72,21 +95,15 @@ int	handle_redirections(t_command *cmd)
 	redir = cmd->redirs;
 	while (redir)
 	{
-		if (check_ambiguous(redir))
+		if (!redir->filename || !redir->filename[0])
+			return (ft_putendl_fd("minishell: ambiguous redirect", 2), 1);
+		if (redir->type == REDIR_IN && handle_in(redir))
 			return (1);
-		if (redir->type == REDIR_IN)
-		{
-			if (handle_in(redir))
-				return (1);
-		}
-		else if (redir->type == REDIR_OUT || redir->type == REDIR_APPEND)
-		{
-			if (handle_out(redir))
-				return (1);
-		}
-		else if (redir->type == REDIR_HEREDOC)
-		{
-		}
+		else if ((redir->type == REDIR_OUT || redir->type == REDIR_APPEND)
+			&& handle_out(redir))
+			return (1);
+		else if (redir->type == REDIR_HEREDOC && handle_heredoc(redir))
+			return (1);
 		redir = redir->next;
 	}
 	return (0);

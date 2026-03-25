@@ -28,7 +28,8 @@ static int	check_redir_syntax(t_token *tmp)
 
 static int	is_logic_op(t_token_type type)
 {
-	return (type == TOKEN_PIPE || type == TOKEN_AND || type == TOKEN_OR);
+	return (type == TOKEN_PIPE || type == TOKEN_AND
+		|| type == TOKEN_OR || type == TOKEN_SEMI);
 }
 
 static int	check_parens_and_logic(t_token *tmp, t_token *prev, int *parens)

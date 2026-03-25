@@ -71,6 +71,11 @@ int	handle_symbol(char *line, int i, t_token **head)
 		append_token(head, new_token(ft_strdup("|"), TOKEN_PIPE));
 		return (i + 1);
 	}
+	if (line[i] == ';')
+	{
+		append_token(head, new_token(ft_strdup(";"), TOKEN_SEMI));
+		return (i + 1);
+	}
 	if (line[i] == '<')
 		return (handle_red_in(line, i, head));
 	if (line[i] == '>')
@@ -89,7 +94,7 @@ t_token	*tokenize(char *line, t_exec_params *params)
 	{
 		if (is_whitespace(line[i]))
 			i++;
-		else if (ft_strchr("|&<>()", line[i]))
+		else if (ft_strchr("|&<>();", line[i]))
 			i = handle_symbol(line, i, &head);
 		else
 		{

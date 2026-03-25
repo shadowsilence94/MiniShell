@@ -41,6 +41,7 @@ typedef enum s_token_type
 	TOKEN_OR,             // ||
 	TOKEN_L_PAREN,        // (
 	TOKEN_R_PAREN,        // )
+	TOKEN_SEMI,           // ; (Sequential operator)
 	TOKEN_EOF             // End of File
 }	t_token_type;
 
@@ -81,9 +82,10 @@ typedef struct s_redir
 // Logical Operators (&& / ||)
 typedef enum e_logical_op
 {
-	LOGIC_NONE,
-	LOGIC_AND,
-	LOGIC_OR
+	LOGIC_NONE,           // Pipe သို့မဟုတ် သာမန် command
+	LOGIC_AND,            // &&
+	LOGIC_OR,             // ||
+	LOGIC_SEQ             // ;
 }	t_logical_op;
 
 // Command Structure (parsing ပြီးထွက်လာမည့် list)
@@ -535,6 +537,11 @@ int	handle_symbol(char *line, int i, t_token **head)
 		append_token(head, new_token(ft_strdup("|"), TOKEN_PIPE));
 		return (i + 1);
 	}
+	if (line[i] == ';') // Semicolon တွေ့လျှင်
+	{
+		append_token(head, new_token(ft_strdup(";"), TOKEN_SEMI));
+		return (i + 1);
+	}
 	if (line[i] == '<') // Redirection In တွေ့လျှင်
 		return (handle_red_in(line, i, head));
 	if (line[i] == '>') // Redirection Out တွေ့လျှင်
@@ -607,6 +614,9 @@ t_command	*parse_tokens(t_token *tokens)
 	}
 	return (head);
 }
+
+**မှတ်ချက်:** `;`, `&&`, `||` နှင့် `|` တို့ကို `handle_token` တွင် `LOGIC_SEQ`, `LOGIC_AND`, `LOGIC_OR` အဖြစ် သတ်မှတ်ပြီး command node အသစ်များ တည်ဆောက်ပါသည်။
+
 ```
 
 ---
@@ -848,15 +858,33 @@ int	handle_redirections(t_command *cmd)
         // ၂။ Redirection အမျိုးအစားအလိုက် file ကို ဖွင့်သည်
 		if (redir->type == REDIR_IN)      // < file
 			handle_in(redir);
-		else if (redir->type == REDIR_OUT) // > file
-			handle_out(redir);
-		else if (redir->type == REDIR_APPEND) // >> file
-			handle_out(redir); // flags ပြောင်းပြီး ဖွင့်သည်
-
+		else if (redir->type == REDIR_HEREDOC) // << EOF
+		{
+			if (handle_heredoc(redir)) // Heredoc ကို process လုပ်သည်
+				return (1);
+		}
 		redir = redir->next;
 	}
 	return (0);
 }
+
+// Heredoc ကို stdin သို့ pipe မှတစ်ဆင့် ပို့ပေးခြင်း
+static void	read_heredoc(int fd, char *delim)
+{
+	char	*line;
+
+	while (1)
+	{
+		line = readline("> ");
+		if (!line || ft_strncmp(line, delim, ft_strlen(delim) + 1) == 0)
+			break ;
+		write(fd, line, ft_strlen(line));
+		write(fd, "\n", 1);
+		free(line);
+	}
+	free(line);
+}
+
 ```
 
 ---

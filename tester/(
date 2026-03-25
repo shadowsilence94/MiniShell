@@ -1,4 +1,0 @@
-minishell$ minishell$ minishell$ echo $?
-0
-minishell$ exit
-minishell$ 

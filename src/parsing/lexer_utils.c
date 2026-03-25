@@ -17,7 +17,7 @@ int	get_word_end(char *line, int i)
 	char	quote;
 
 	while (line[i] && !is_whitespace(line[i])
-		&& !ft_strchr("|<>&()", line[i]))
+		&& !ft_strchr("|<>&();", line[i]))
 	{
 		if (line[i] == '\'' || line[i] == '"')
 		{

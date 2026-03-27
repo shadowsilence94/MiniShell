@@ -159,25 +159,26 @@ char			*handle_expansion(char *val, int *i, t_exec_params *p, bool dq);
 /*
  * Execution
  */
-char			*find_command_path(char *cmd, char **envp);
-void			execute_commands(t_command *cmd_list, char ***envp,
-					int *last_status);
-void			handle_process_loop(t_command *cmd, char ***envp,
-					int *last_status);
-int				is_builtin(char *cmd);
-int				execute_builtin(t_command *cmd, char ***envp, int *last_status);
-void			run_single_builtin(t_command *cmd, char ***envp,
-					int *last_status);
-int				handle_redirections(t_command *cmd, t_exec_params *params);
-void			wait_for_children(pid_t last_pid, int *last_status);
-void			execute_command_node(t_command *curr, char ***envp,
-					int *last_status);
-void			child_process(t_command *cmd, t_exec_params *params);
-int				handle_in(t_redir *redir);
-int				handle_out(t_redir *redir);
-int				handle_heredoc(t_redir *redir, t_exec_params *params);
-int				is_dir(char *path);
-void			exec_script(char *path, char **args, char **envp);
+char					*find_command_path(char *cmd, char **envp);
+void					execute_commands(t_command *cmd_list, char ***envp,
+							int *last_status);
+void					handle_process_loop(t_command *cmd, char ***envp,
+							int *last_status);
+int						is_builtin(char *cmd);
+int						execute_builtin(t_command *cmd, char ***envp,
+							int *last_status);
+void					run_single_builtin(t_command *cmd, char ***envp,
+							int *last_status);
+int						handle_redirections(t_command *cmd, t_exec_params *params);
+void					wait_for_children(pid_t last_pid, int *last_status);
+void					execute_command_node(t_command *curr, char ***envp,
+							int *last_status);
+void					child_process(t_command *cmd, t_exec_params *params);
+int						handle_in(t_redir *redir);
+int						handle_out(t_redir *redir);
+int						handle_heredoc(t_redir *redir, t_exec_params *params);
+int						is_dir(char *path);
+void					exec_script(char *path, char **args, char **envp);
 
 /*
  * Builtins
@@ -202,16 +203,17 @@ void			print_export(char **envp);
 /*
  * Environment Utilities
  */
-char			**copy_env(char **envp);
-char			*get_env_value(char **envp, char *key);
-void			set_env(char ***envp, char *key, char *value);
-void			increment_shlvl(char ***envp);
-char			*get_var_value(char *name, char **envp, int last_status);
-void			remove_var(char ***envp, int j);
+char					**copy_env(char **envp);
+char					*get_env_value(char **envp, char *key);
+void					set_env(char ***envp, char *key, char *value);
+void					increment_shlvl(char ***envp);
+char					*get_var_value(char *name, char **envp,
+							int last_status);
+void					remove_var(char ***envp, int j);
 
 /*
  * Signals
  */
-void		setup_signals(void);
+void					setup_signals(void);
 
 #endif

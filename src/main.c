@@ -21,6 +21,32 @@ static void	init_shell(char ***env_vars, char **envp)
 	setup_signals();
 }
 
+static void	shell_loop(char ***env_vars, int *last_status)
+{
+	char	*line;
+
+	while (1)
+	{
+		g_signal_received = 0;
+		line = readline(PROMPT);
+		if (!line)
+		{
+			if (g_signal_received)
+			{
+				*last_status = 130;
+				continue ;
+			}
+			if (isatty(STDIN_FILENO))
+				ft_putendl_fd("exit", 1);
+			break ;
+		}
+		if (g_signal_received)
+			*last_status = 130;
+		process_input(line, env_vars, last_status);
+		free(line);
+	}
+}
+
 void	process_input(char *line, char ***envp, int *last_status)
 {
 	t_command	*cmd_list;
@@ -37,7 +63,6 @@ void	process_input(char *line, char ***envp, int *last_status)
 
 int	main(int argc, char **argv, char **envp)
 {
-	char	*line;
 	char	**env_vars;
 	int		last_status;
 
@@ -46,26 +71,7 @@ int	main(int argc, char **argv, char **envp)
 	init_shell(&env_vars, envp);
 	last_status = 0;
 	g_signal_received = 0;
-	while (1)
-	{
-		g_signal_received = 0;
-		line = readline(PROMPT);
-		if (!line)
-		{
-			if (g_signal_received)
-			{
-				last_status = 130;
-				continue ;
-			}
-			if (isatty(STDIN_FILENO))
-				ft_putendl_fd("exit", 1);
-			break ;
-		}
-		if (g_signal_received)
-			last_status = 130;
-		process_input(line, &env_vars, &last_status);
-		free(line);
-	}
+	shell_loop(&env_vars, &last_status);
 	rl_clear_history();
 	free_split(env_vars);
 	return (last_status);

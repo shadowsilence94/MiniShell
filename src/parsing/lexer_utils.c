@@ -22,12 +22,19 @@ int	get_word_end(char *line, int i)
 		if (line[i] == '\'' || line[i] == '"')
 		{
 			quote = line[i++];
-			while (line[i] && line[i] != quote)
-				i++;
+			while (line[i] && (line[i] != quote))
+			{
+				if (line[i] == '\\' && quote == '"' && line[i + 1] == quote)
+					i += 2;
+				else
+					i++;
+			}
 			if (!line[i])
 				return (-1);
 			i++;
 		}
+		else if (line[i] == '\\' && line[i + 1])
+			i += 2;
 		else
 			i++;
 	}

@@ -1,34 +1,28 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   signals.c                                          :+:      :+:    :+:   */
+/*   compat.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: hko-ko <hko-ko@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/12/26 12:00:00 by hko-ko            #+#    #+#             */
-/*   Updated: 2026/03/14 21:10:00 by hko-ko           ###   ########.fr       */
+/*   Created: 2026/03/15 12:00:00 by hko-ko            #+#    #+#             */
+/*   Updated: 2026/03/15 12:00:00 by hko-ko           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-void	handle_sigint(int sig)
+#ifdef __APPLE__
+
+void	rl_replace_line(const char *text, int clear_undo)
 {
-	(void)sig;
-	write(STDOUT_FILENO, "\n", 1);
-	rl_on_new_line();
-	rl_replace_line("", 0);
-	rl_redisplay();
-	g_signal_received = sig;
+	(void)text;
+	(void)clear_undo;
 }
 
-void	setup_signals(void)
+void	rl_clear_history(void)
 {
-	struct sigaction	sa;
-
-	sa.sa_handler = handle_sigint;
-	sigemptyset(&sa.sa_mask);
-	sa.sa_flags = 0;
-	sigaction(SIGINT, &sa, NULL);
-	signal(SIGQUIT, SIG_IGN);
+	clear_history();
 }
+
+#endif

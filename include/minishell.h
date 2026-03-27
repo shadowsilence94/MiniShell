@@ -26,6 +26,10 @@
 # include <readline/history.h>
 # include "../libft/libft.h"
 
+/* Readline/Libedit compatibility */
+void			rl_replace_line(const char *text, int clear_undo);
+void			rl_clear_history(void);
+
 # define PROMPT "minishell$ "
 
 /*
@@ -36,7 +40,7 @@ extern volatile sig_atomic_t	g_signal_received;
 /*
  * Enum for token types
  */
-typedef enum s_token_type
+typedef enum e_token_type
 {
 	TOKEN_WORD,
 	TOKEN_PIPE,
@@ -54,9 +58,9 @@ typedef enum s_token_type
 
 typedef struct s_token
 {
-	char			*value;
-	t_token_type	type;
-	struct s_token	*next;
+	char				*value;
+	t_token_type		type;
+	struct s_token		*next;
 }	t_token;
 
 /*
@@ -68,6 +72,9 @@ typedef struct s_exec_params
 	int		*last_status;
 	int		prev_fd;
 	int		p_fd[2];
+	bool	sq;
+	bool	dq;
+	bool	any_q;
 }	t_exec_params;
 
 typedef enum e_redir_type
@@ -113,40 +120,41 @@ typedef struct s_command
 /*
  * Parsing & Lexing
  */
-t_token		*tokenize(char *line, t_exec_params *params);
-t_command	*parse_input(char *line, char **envp, int *last_status);
-t_command	*parse_tokens(t_token *tokens);
-int			validate_syntax(t_token *tokens);
-int			is_whitespace(char c);
-t_token		*new_token(char *value, t_token_type type);
-void		append_token(t_token **head, t_token *new_t);
-void		free_tokens(t_token *tokens);
-int			print_err(char *token);
-char		*expand_status(char *val, t_exec_params *params);
-t_command	*new_command(void);
-void		add_argument(t_command *cmd, char *arg);
-void		add_redirection(t_command *cmd, t_token *token,
-				t_token *file_token);
-int			get_word_end(char *line, int i);
-int			handle_word(char *line, int i, t_token **head,
-				t_exec_params *params);
-t_token		*expand_wildcard(char *pattern);
-int			has_unquoted_wildcard(char *str);
-int			has_unquoted_var(char *str);
-int			count_wildcard_matches(char *pattern);
-void		expand_cmd_wildcards(t_command *cmd);
-char		*append_char(char *res, char c);
-t_token		*extract_subtokens(t_token *start, t_token *end);
-void		sort_strings(char **arr, int count);
-char		*prepare_pattern(char *pattern);
-void		clean_marker(char *pattern);
-int			get_expanded_count(char *arg);
-void		fill_wildcard_list(char *arg, char **new_args, int *c);
-void		toggle_quotes(char c, bool *s_quote, bool *d_quote);
-char		*apply_expansion(char *res, char *var_val);
-bool		is_expandable(char *v, int i, bool sq);
-void		handle_status_quotes(char c, bool q[3], int *i);
-char		*expand_heredoc_line(char *line, t_exec_params *params);
+t_token			*tokenize(char *line, t_exec_params *params);
+t_command		*parse_input(char *line, char **envp, int *last_status);
+t_command		*parse_tokens(t_token *tokens);
+int				validate_syntax(t_token *tokens);
+int				is_whitespace(char c);
+t_token			*new_token(char *value, t_token_type type);
+void			append_token(t_token **head, t_token *new_t);
+void			free_tokens(t_token *tokens);
+int				print_err(char *token);
+char			*expand_status(char *val, t_exec_params *params);
+t_command		*new_command(void);
+void			add_argument(t_command *cmd, char *arg);
+void			add_redirection(t_command *cmd, t_token *token,
+					t_token *file_token);
+int				get_word_end(char *line, int i);
+int				handle_word(char *line, int i, t_token **head,
+					t_exec_params *params);
+t_token			*expand_wildcard(char *pattern);
+int				has_unquoted_wildcard(char *str);
+int				has_unquoted_var(char *str);
+int				count_wildcard_matches(char *pattern);
+void			expand_cmd_wildcards(t_command *cmd);
+char			*append_char(char *res, char c);
+t_token			*extract_subtokens(t_token *start, t_token *end);
+void			sort_strings(char **arr, int count);
+char			*prepare_pattern(char *pattern);
+void			clean_marker(char *pattern);
+int				get_expanded_count(char *arg);
+void			fill_wildcard_list(char *arg, char **new_args, int *c);
+void			toggle_quotes(char c, bool *s_quote, bool *d_quote);
+char			*apply_expansion(char *res, char *var_val);
+bool			is_expandable(char *v, int i, bool sq);
+void			handle_status_quotes(char c, bool q[3], int *i);
+char			*expand_heredoc_line(char *line, t_exec_params *params);
+char			*handle_expansion(char *val, int *i, t_exec_params *p, bool dq);
 
 /*
  * Execution
@@ -161,7 +169,12 @@ int			execute_builtin(t_command *cmd, char ***envp, int *last_status);
 void		run_single_builtin(t_command *cmd, char ***envp, int *last_status);
 int			handle_redirections(t_command *cmd, t_exec_params *params);
 void		wait_for_children(pid_t last_pid, int *last_status);
+void		execute_command_node(t_command *curr, char ***envp,
+				int *last_status);
 void		child_process(t_command *cmd, t_exec_params *params);
+int			handle_in(t_redir *redir);
+int			handle_out(t_redir *redir);
+int			handle_heredoc(t_redir *redir, t_exec_params *params);
 int			is_dir(char *path);
 void		exec_script(char *path, char **args, char **envp);
 

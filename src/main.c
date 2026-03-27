@@ -12,7 +12,7 @@
 
 #include "minishell.h"
 
-volatile sig_atomic_t	g_signal_received = 0;
+volatile sig_atomic_t	g_signal_received;
 
 static void	init_shell(char ***env_vars, char **envp)
 {
@@ -46,15 +46,24 @@ int	main(int argc, char **argv, char **envp)
 	(void)argv;
 	init_shell(&env_vars, envp);
 	last_status = 0;
+	g_signal_received = 0;
 	while (1)
 	{
+		g_signal_received = 0;
 		line = readline(PROMPT);
 		if (!line)
 		{
+			if (g_signal_received)
+			{
+				last_status = 130;
+				continue ;
+			}
 			if (isatty(STDIN_FILENO))
 				printf("exit\n");
 			break ;
 		}
+		if (g_signal_received)
+			last_status = 130;
 		process_input(line, &env_vars, &last_status);
 		free(line);
 	}

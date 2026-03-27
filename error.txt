@@ -1,0 +1,291 @@
+TEST-206 | 🔥🔥🔥 EXTREMA: THE KESSLER SYNDROME - The Pipestorm Catastrophe
+  ❌ FAIL - Output Mismatch
+  [Expected Output]: (Empty/Vary/Long/Directory/Void-Error) - See the Result Below
+  [LIVE-RUN Output]:
+  ■  >>> LIVE-CODE-EXECUTION
+  ■  $ ./minishell
+minishell$ non_cmd | < 09.hell_txt grep r | > /dev/perm_denied cat | echo $?
+minishell: non_cmd: command not found
+/dev/perm_denied: Permission denied
+0
+minishell$ exit
+  ■  [SIGNAL]: STANDARD BASH-Signal: 2 | INTERCEPTED ./minishell Signal: 0 (MISMATCH)
+
+TEST-203 | 🔥🔥🔥 EXTREMA: LBJ ASSASSINATED JFK - The Giancana's Missing Cuban Link
+  ❌ FAIL - Output Mismatch
+  [Expected Output]: (Empty/Vary/Long/Directory/Void-Error) - See the Result Below
+  [LIVE-RUN Output]:
+  ■  >>> LIVE-CODE-EXECUTION
+  ■  $ ./minishell
+minishell$ cat < file_that_never_exists > /dev/null | grep $? | cat >> $USER
+file_that_never_exists: No such file or directory
+minishell$ exit
+  ■  [SIGNAL]: STANDARD BASH-Signal: 1 | INTERCEPTED ./minishell Signal: 0 (MISMATCH)
+
+TEST-192 | 🔥 UNSET +++++
+  ❌ FAIL - Output Mismatch
+  [Expected Output]: (Empty/Vary/Long/Directory/Void-Error) - See the Result Below
+  [LIVE-RUN Output]:
+  ■  >>> LIVE-CODE-EXECUTION
+  ■  $ ./minishell
+minishell$ unset +++++
+minishell: unset: `+++++': not a valid identifier
+minishell$ exit
+  ■  [SIGNAL]: STANDARD BASH-Signal: 0 | INTERCEPTED ./minishell Signal: 1 (MISMATCH)
+
+EST-171 | 🔥 THE MISTY MIRROR 04 - ENV-VAR Passed-Thru Unfinished Rear-Quote
+  ❌ FAIL - Output Mismatch
+  [Expected Output]: (Empty/Vary/Long/Directory/Void-Error) - See the Result Below
+  [LIVE-RUN Output]:
+  ■  >>> LIVE-CODE-EXECUTION
+  ■  $ ./minishell
+minishell$ echo $USER'
+minishell: syntax error: unclosed quote
+minishell$ exit
+  ■  [SIGNAL]: STANDARD BASH-Signal: 130 | INTERCEPTED ./minishell Signal: 2 (MISMATCH)
+
+TEST-170 | 🔥 THE MISTY MIRROR 03 - ENV-VAR Passed-Thru Unfinished Rear-Quote
+  ❌ FAIL - Output Mismatch
+  [Expected Output]: (Empty/Vary/Long/Directory/Void-Error) - See the Result Below
+  [LIVE-RUN Output]:
+  ■  >>> LIVE-CODE-EXECUTION
+  ■  $ ./minishell
+minishell$ echo $USER"
+minishell: syntax error: unclosed quote
+minishell$ exit
+  ■  [SIGNAL]: STANDARD BASH-Signal: 130 | INTERCEPTED ./minishell Signal: 2 (MISMATCH)
+
+TEST-169 | 🔥 THE MISTY MIRROR 02 - ENV-VAR Passed-Thru Unfinished Front-Quote
+  ❌ FAIL - Output Mismatch
+  [Expected Output]: (Empty/Vary/Long/Directory/Void-Error) - See the Result Below
+  [LIVE-RUN Output]:
+  ■  >>> LIVE-CODE-EXECUTION
+  ■  $ ./minishell
+minishell$ echo '$USER
+minishell: syntax error: unclosed quote
+minishell$ exit
+  ■  [SIGNAL]: STANDARD BASH-Signal: 130 | INTERCEPTED ./minishell Signal: 2 (MISMATCH)
+
+TEST-168 | 🔥 THE MISTY MIRROR 01 - ENV-VAR Passed-Thru Unfinished Front-Quote
+  ❌ FAIL - Output Mismatch
+  [Expected Output]: (Empty/Vary/Long/Directory/Void-Error) - See the Result Below
+  [LIVE-RUN Output]:
+  ■  >>> LIVE-CODE-EXECUTION
+  ■  $ ./minishell
+minishell$ echo "$USER
+minishell: syntax error: unclosed quote
+minishell$ exit
+  ■  [SIGNAL]: STANDARD BASH-Signal: 130 | INTERCEPTED ./minishell Signal: 2 (MISMATCH)
+
+TEST-167 | 🔥 THE HALTED RITUAL - ENV-VAR Passed-Thru Mismatched Quotes
+  ❌ FAIL - Output Mismatch
+  [Expected Output]: (Empty/Vary/Long/Directory/Void-Error) - See the Result Below
+  [LIVE-RUN Output]:
+  ■  >>> LIVE-CODE-EXECUTION
+  ■  $ ./minishell
+minishell$ echo '$USER"
+minishell: syntax error: unclosed quote
+minishell$ exit
+  ■  [SIGNAL]: STANDARD BASH-Signal: 130 | INTERCEPTED ./minishell Signal: 2 (MISMATCH)
+
+TEST-147 | 🔥🔥 BLACK-HAT EXECUTION - Running CHMOD-000 { PROGRAM000 }
+  ❌ FAIL - Output Mismatch
+  [Expected Output]: (Empty/Vary/Long/Directory/Void-Error) - See the Result Below
+  [LIVE-RUN Output]:
+  ■  >>> LIVE-CODE-EXECUTION
+  ■  $ ./minishell
+minishell$ ./PROGRAM000
+./PROGRAM000: Permission denied
+minishell$ exit
+  ■  [SIGNAL]: STANDARD BASH-Signal: 127 | INTERCEPTED ./minishell Signal: 126 (MISMATCH)
+
+TEST-143 | 🔥 THE RAPID BLINK - at a Blinking Speed
+  ❌ FAIL - Output Mismatch
+  [Expected Output]: (Empty/Vary/Long/Directory/Void-Error) - See the Result Below
+  [LIVE-RUN Output]:
+  ■  >>> LIVE-CODE-EXECUTION
+  ■  $ ./minishell
+minishell$ ./minishell -c 'exit'
+minishell$ minishell$ exit
+  ■  [SIGNAL]: STANDARD BASH-Signal: 127 | INTERCEPTED ./minishell Signal: 0 (MISMATCH)
+
+TEST-138 | 🔥 THE TROCADERO BRIDGE of HELL KM.20 - Breached ENV-EXPORT Command
+  ❌ FAIL - Output Mismatch
+  [Expected Output]: (Empty/Vary/Long/Directory/Void-Error) - See the Result Below
+  [LIVE-RUN Output]:
+  ■  >>> LIVE-CODE-EXECUTION
+  ■  $ ./minishell
+minishell$ export TEST+=13
+minishell: export: `TEST+=13': not a valid identifier
+minishell$ exit
+  ■  [SIGNAL]: STANDARD BASH-Signal: 0 | INTERCEPTED ./minishell Signal: 1 (MISMATCH)
+
+TEST-137 | 🔥 THE TROCADERO BRIDGE of HELL KM.10 - Breached ENV-EXPORT Command
+  ❌ FAIL - Output Mismatch
+  [Expected Output]: (Empty/Vary/Long/Directory/Void-Error) - See the Result Below
+  [LIVE-RUN Output]:
+  ■  >>> LIVE-CODE-EXECUTION
+  ■  $ ./minishell
+minishell$ export TES!T=13
+minishell: export: `TES!T=13': not a valid identifier
+minishell$ exit
+  ■  [SIGNAL]: STANDARD BASH-Signal: 0 | INTERCEPTED ./minishell Signal: 1 (MISMATCH)
+
+TEST-130 | 🔥 REGOLITH 10 - echo bonjour > $test w/ t
+  ❌ FAIL - Output Mismatch
+  [Expected Output]: (Empty/Vary/Long/Directory/Void-Error) - See the Result Below
+  [LIVE-RUN Output]:
+  ■  >>> LIVE-CODE-EXECUTION
+  ■  $ ./minishell
+minishell$ echo bonjour > $test w/ t
+minishell$ echo $?
+0
+minishell$ exit
+  ■  [SIGNAL]: STANDARD BASH-Signal: 1 | INTERCEPTED ./minishell Signal: 0 (MISMATCH)
+
+TEST-123 | 🔥 REGOLITH 03 - Input into Undefined Variable: echo x > $y
+  ❌ FAIL - Output Mismatch
+  [Expected Output]: (Empty/Vary/Long/Directory/Void-Error) - See the Result Below
+  [LIVE-RUN Output]:
+  ■  >>> LIVE-CODE-EXECUTION
+  ■  $ ./minishell
+minishell$ echo bonjour > $test
+minishell$ echo $?
+0
+minishell$ exit
+  ■  [SIGNAL]: STANDARD BASH-Signal: 1 | INTERCEPTED ./minishell Signal: 0 (MISMATCH)
+
+TEST-121 | 🔥 REGOLITH 01 - echo "bip | bip ; coyotte > < " "
+  ❌ FAIL - Output Mismatch
+  [Expected Output]: (Empty/Vary/Long/Directory/Void-Error) - See the Result Below
+  [LIVE-RUN Output]:
+  ■  >>> LIVE-CODE-EXECUTION
+  ■  $ ./minishell
+minishell$ echo "bip | bip ; coyotte > < " "
+minishell: syntax error: unclosed quote
+minishell$ echo $?
+2
+minishell$ exit
+  ■  [SIGNAL]: STANDARD BASH-Signal: 130 | INTERCEPTED ./minishell Signal: 0 (MISMATCH)
+
+TEST-102 | 🔥 THE FIRST MEOW - cat
+  ❌ FAIL - Output Mismatch
+  [Expected Output]: (Empty/Vary/Long/Directory/Void-Error) - See the Result Below
+  [LIVE-RUN Output]:
+  ■  >>> LIVE-CODE-EXECUTION
+  ■  $ ./minishell
+minishell$ cat
+echo $?minishell$ exit
+  ■  [SIGNAL]: STANDARD BASH-Signal: 130 | INTERCEPTED ./minishell Signal: 0 (MISMATCH)
+
+TEST-048 | 🔥🔥 THE WELL of MISERY - Combo Torture Chamber-E: where dissidents died
+  ❌ FAIL - Output Mismatch
+  [Expected Output]: (Empty/Vary/Long/Directory/Void-Error) - See the Result Below
+  [LIVE-RUN Output]:
+  ■  >>> LIVE-CODE-EXECUTION
+  ■  $ ./minishell
+minishell$ echo -n "Success"; echo ' ; echo "-n " ; echo ' " '
+minishell: syntax error: unclosed quote
+minishell$ exit
+  ■  [SIGNAL]: STANDARD BASH-Signal: 130 | INTERCEPTED ./minishell Signal: 2 (MISMATCH)
+
+TEST-047 | 🔥🔥 THE RED ROOM - Combo Torture Chamber-B: the semicolon snake
+  ❌ FAIL - Output Mismatch
+  [Expected Output]: (Empty/Vary/Long/Directory/Void-Error) - See the Result Below
+  [LIVE-RUN Output]:
+  ■  >>> LIVE-CODE-EXECUTION
+  ■  $ ./minishell
+minishell$ echo -n "The ; "; echo "Ouija's Spiritus"; echo -n "; Sanctus
+minishell: syntax error: unclosed quote
+minishell$ exit
+  ■  [SIGNAL]: STANDARD BASH-Signal: 130 | INTERCEPTED ./minishell Signal: 2 (MISMATCH)
+
+EST-037 | 🔥🔥 THE CLIENTS - Quotes Slips within Backslashed Quotes
+  ❌ FAIL - Output Mismatch
+  [Expected Output]: Elite "Pedophiles"
+  [LIVE-RUN Output]:
+  ■  >>> LIVE-CODE-EXECUTION
+  ■  $ ./minishell
+minishell$ echo "Elite \"Pedophiles\""
+Elite \Pedophiles\
+minishell$ exit
+  ■  [SIGNAL]: STANDARD BASH-Signal: 0 | INTERCEPTED ./minishell Signal: 0 (MATCH)
+
+TEST-035 | 🔥 THE RETRO COCKTAIL - Combo Echo Quotes
+  ❌ FAIL - Output Mismatch
+  [Expected Output]: (Empty/Vary/Long/Directory/Void-Error) - See the Result Below
+  [LIVE-RUN Output]:
+  ■  >>> LIVE-CODE-EXECUTION
+  ■  $ ./minishell
+minishell$ echo villanova"'Junction'"Verdant"Dominion"Vermillion"Detour
+minishell: syntax error: unclosed quote
+minishell$ exit
+  ■  [SIGNAL]: STANDARD BASH-Signal: 130 | INTERCEPTED ./minishell Signal: 2 (MISMATCH)
+
+TEST-034 | 🔥 THE WATERPASS - Sentence in: Uneven Quotes Right-Heavy ('    ")
+  ❌ FAIL - Output Mismatch
+  [Expected Output]: (Empty/Vary/Long/Directory/Void-Error) - See the Result Below
+  [LIVE-RUN Output]:
+  ■  >>> LIVE-CODE-EXECUTION
+  ■  $ ./minishell
+minishell$ echo 'Beyond Watergate"
+minishell: syntax error: unclosed quote
+minishell$ exit
+  ■  [SIGNAL]: STANDARD BASH-Signal: 130 | INTERCEPTED ./minishell Signal: 2 (MISMATCH)
+
+TEST-033 | 🔥 AND JUSTICE for ALL - Sentence in: Uneven Quotes Left-Heavy ("    ')
+  ❌ FAIL - Output Mismatch
+  [Expected Output]: (Empty/Vary/Long/Directory/Void-Error) - See the Result Below
+  [LIVE-RUN Output]:
+  ■  >>> LIVE-CODE-EXECUTION
+  ■  $ ./minishell
+minishell$ echo "James Hetfield'
+minishell: syntax error: unclosed quote
+minishell$ exit
+  ■  [SIGNAL]: STANDARD BASH-Signal: 130 | INTERCEPTED ./minishell Signal: 2 (MISMATCH)
+
+TEST-030 | 🔥 THE RIGHT PENDANT - Reversed Unfinished Double-Quotes (   ")
+  ❌ FAIL - Output Mismatch
+  [Expected Output]: (Empty/Vary/Long/Directory/Void-Error) - See the Result Below
+  [LIVE-RUN Output]:
+  ■  >>> LIVE-CODE-EXECUTION
+  ■  $ ./minishell
+minishell$ echo Florentine Nightingale"
+minishell: syntax error: unclosed quote
+minishell$ exit
+  ■  [SIGNAL]: STANDARD BASH-Signal: 130 | INTERCEPTED ./minishell Signal: 2 (MISMATCH)
+
+TEST-029 | 🔥 CHEATCODE GONZO OPERA - Reversed Unfinished Single-Quotes (   ')
+  ❌ FAIL - Output Mismatch
+  [Expected Output]: (Empty/Vary/Long/Directory/Void-Error) - See the Result Below
+  [LIVE-RUN Output]:
+  ■  >>> LIVE-CODE-EXECUTION
+  ■  $ ./minishell
+minishell$ echo Commandos!'
+minishell: syntax error: unclosed quote
+minishell$ exit
+  ■  [SIGNAL]: STANDARD BASH-Signal: 130 | INTERCEPTED ./minishell Signal: 2 (MISMATCH)
+
+TEST-028 | 🔥 THE HANGING DIALOGUE - Unfinished Double-Quotes ("   )
+  ❌ FAIL - Output Mismatch
+  [Expected Output]: (Empty/Vary/Long/Directory/Void-Error) - See the Result Below
+  [LIVE-RUN Output]:
+  ■  >>> LIVE-CODE-EXECUTION
+  ■  $ ./minishell
+minishell$ echo "The Appalachian Cryptid...
+minishell: syntax error: unclosed quote
+minishell$ exit
+  ■  [SIGNAL]: STANDARD BASH-Signal: 130 | INTERCEPTED ./minishell Signal: 2 (MISMATCH)
+
+TEST-027 | 🔥 THE DANGLING MONOLOGUE - Unfinished Single-Quotes ('   )
+  ❌ FAIL - Output Mismatch
+  [Expected Output]: (Empty/Vary/Long/Directory/Void-Error) - See the Result Below
+  [LIVE-RUN Output]:
+  ■  >>> LIVE-CODE-EXECUTION
+  ■  $ ./minishell
+minishell$ echo 'What The Heck...
+minishell: syntax error: unclosed quote
+minishell$ echo $?
+2
+minishell$ exit
+  ■  [SIGNAL]: STANDARD BASH-Signal: 130 | INTERCEPTED ./minishell Signal: 0 (MISMATCH)

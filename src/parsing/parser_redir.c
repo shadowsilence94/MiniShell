@@ -92,8 +92,7 @@ void	add_redirection(t_command *cmd, t_token *token, t_token *file_token)
 	if (!redir)
 		return ;
 	redir->type = (t_redir_type)(token->type - TOKEN_REDIRECT_IN);
-	redir->quoted = (ft_strchr(file_token->value, '\'') != NULL
-			|| ft_strchr(file_token->value, '"') != NULL);
+	redir->quoted = file_token->quoted;
 	redir->filename = ft_strdup(file_token->value);
 	redir->next = NULL;
 	if (!cmd->redirs)

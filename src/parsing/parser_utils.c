@@ -92,7 +92,8 @@ t_token	*extract_subtokens(t_token *start, t_token *end)
 	curr = start;
 	while (curr && curr != end)
 	{
-		append_token(&head, new_token(ft_strdup(curr->value), curr->type));
+		append_token(&head, new_token(ft_strdup(curr->value),
+				curr->type, curr->quoted));
 		curr = curr->next;
 	}
 	return (head);

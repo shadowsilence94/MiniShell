@@ -60,6 +60,7 @@ typedef struct s_token
 {
 	char				*value;
 	t_token_type		type;
+	bool				quoted;
 	struct s_token		*next;
 }	t_token;
 
@@ -125,7 +126,7 @@ t_command		*parse_input(char *line, char **envp, int *last_status);
 t_command		*parse_tokens(t_token *tokens);
 int				validate_syntax(t_token *tokens);
 int				is_whitespace(char c);
-t_token			*new_token(char *value, t_token_type type);
+t_token			*new_token(char *value, t_token_type type, bool quoted);
 void			append_token(t_token **head, t_token *new_t);
 void			free_tokens(t_token *tokens);
 int				print_err(char *token);

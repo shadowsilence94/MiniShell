@@ -16,10 +16,10 @@ static int	handle_red_in(char *line, int i, t_token **head)
 {
 	if (line[i + 1] == '<')
 	{
-		append_token(head, new_token(ft_strdup("<<"), TOKEN_HEREDOC));
+		append_token(head, new_token(ft_strdup("<<"), TOKEN_HEREDOC, false));
 		return (i + 2);
 	}
-	append_token(head, new_token(ft_strdup("<"), TOKEN_REDIRECT_IN));
+	append_token(head, new_token(ft_strdup("<"), TOKEN_REDIRECT_IN, false));
 	return (i + 1);
 }
 
@@ -27,10 +27,10 @@ static int	handle_red_out(char *line, int i, t_token **head)
 {
 	if (line[i + 1] == '>')
 	{
-		append_token(head, new_token(ft_strdup(">>"), TOKEN_APPEND));
+		append_token(head, new_token(ft_strdup(">>"), TOKEN_APPEND, false));
 		return (i + 2);
 	}
-	append_token(head, new_token(ft_strdup(">"), TOKEN_REDIRECT_OUT));
+	append_token(head, new_token(ft_strdup(">"), TOKEN_REDIRECT_OUT, false));
 	return (i + 1);
 }
 
@@ -38,22 +38,22 @@ static int	handle_logical_or_paren(char *line, int i, t_token **head)
 {
 	if (line[i] == '|' && line[i + 1] == '|')
 	{
-		append_token(head, new_token(ft_strdup("||"), TOKEN_OR));
+		append_token(head, new_token(ft_strdup("||"), TOKEN_OR, false));
 		return (i + 2);
 	}
 	if (line[i] == '&' && line[i + 1] == '&')
 	{
-		append_token(head, new_token(ft_strdup("&&"), TOKEN_AND));
+		append_token(head, new_token(ft_strdup("&&"), TOKEN_AND, false));
 		return (i + 2);
 	}
 	if (line[i] == '(')
 	{
-		append_token(head, new_token(ft_strdup("("), TOKEN_L_PAREN));
+		append_token(head, new_token(ft_strdup("("), TOKEN_L_PAREN, false));
 		return (i + 1);
 	}
 	if (line[i] == ')')
 	{
-		append_token(head, new_token(ft_strdup(")"), TOKEN_R_PAREN));
+		append_token(head, new_token(ft_strdup(")"), TOKEN_R_PAREN, false));
 		return (i + 1);
 	}
 	return (0);
@@ -68,12 +68,12 @@ int	handle_symbol(char *line, int i, t_token **head)
 		return (res);
 	if (line[i] == '|')
 	{
-		append_token(head, new_token(ft_strdup("|"), TOKEN_PIPE));
+		append_token(head, new_token(ft_strdup("|"), TOKEN_PIPE, false));
 		return (i + 1);
 	}
 	if (line[i] == ';')
 	{
-		append_token(head, new_token(ft_strdup(";"), TOKEN_SEMI));
+		append_token(head, new_token(ft_strdup(";"), TOKEN_SEMI, false));
 		return (i + 1);
 	}
 	if (line[i] == '<')

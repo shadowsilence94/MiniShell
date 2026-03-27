@@ -53,7 +53,7 @@ static int	last_is_redir(t_token *head)
 	return (tmp->type >= TOKEN_REDIRECT_IN && tmp->type <= TOKEN_HEREDOC);
 }
 
-static void	add_word_token(t_token **head, char *word, char *expanded)
+static void	add_word_token(t_token **head, char *word, char *expanded, bool quoted)
 {
 	if (expanded && last_is_redir(*head))
 	{
@@ -66,9 +66,7 @@ static void	add_word_token(t_token **head, char *word, char *expanded)
 		}
 	}
 	if (expanded)
-		append_token(head, new_token(expanded, TOKEN_WORD));
-	else if (last_is_redir(*head))
-		append_token(head, new_token(ft_strdup(""), TOKEN_WORD));
+		append_token(head, new_token(expanded, TOKEN_WORD, quoted));
 }
 
 int	handle_word(char *line, int i, t_token **head, t_exec_params *params)
@@ -82,7 +80,7 @@ int	handle_word(char *line, int i, t_token **head, t_exec_params *params)
 		return (-1);
 	word = ft_substr(line, i, end - i);
 	expanded = expand_status(word, params);
-	add_word_token(head, word, expanded);
+	add_word_token(head, word, expanded, params->any_q);
 	free(word);
 	return (end);
 }

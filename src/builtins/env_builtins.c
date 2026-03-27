@@ -12,7 +12,7 @@
 
 #include "minishell.h"
 
-static int	is_valid_identifier(char *s)
+static int	is_v(char *s)
 {
 	int	i;
 
@@ -28,27 +28,44 @@ static int	is_valid_identifier(char *s)
 	return (1);
 }
 
-int	ft_export(char **args, char ***envp)
+static int	unvalid_id(char *b, char *id, char *key)
+{
+	if (is_v(key))
+		return (0);
+	ft_putstr_fd("minishell: ", 2);
+	ft_putstr_fd(b, 2);
+	ft_putstr_fd(": `", 2);
+	ft_putstr_fd(id, 2);
+	ft_putendl_fd("': not a valid identifier", 2);
+	return (1);
+}
+
+int	ft_export(char **args, char ***env)
 {
 	int		i;
+	int		l;
 	char	*key;
 	char	*eq;
+	int		status;
 
 	if (!args[1])
-		return (print_export(*envp), 0);
+		return (print_export(*env), 0);
 	i = 0;
+	status = 0;
 	while (args[++i])
 	{
 		eq = ft_strchr(args[i], '=');
-		key = ft_substr(args[i], 0, (eq - args[i]) * (eq != NULL)
-				+ ft_strlen(args[i]) * (eq == NULL));
-		if (!is_valid_identifier(key))
-			ft_putendl_fd("minishell: export: invalid identifier", 2);
+		l = ft_strlen(args[i]);
+		if (eq)
+			l = eq - args[i];
+		key = ft_substr(args[i], 0, l);
+		if (unvalid_id("export", args[i], key))
+			status = 1;
 		else if (eq)
-			set_env(envp, key, eq + 1);
+			set_env(env, key, eq + 1);
 		free(key);
 	}
-	return (0);
+	return (status);
 }
 
 int	ft_env(char **envp)
@@ -65,41 +82,31 @@ int	ft_env(char **envp)
 	return (0);
 }
 
-static void	remove_var(char ***envp, int j)
-{
-	free((*envp)[j]);
-	while ((*envp)[j])
-	{
-		(*envp)[j] = (*envp)[j + 1];
-		j++;
-	}
-}
-
-int	ft_unset(char **args, char ***envp)
+int	ft_unset(char **args, char ***env)
 {
 	int	i;
 	int	j;
-	int	len;
+	int	l;
+	int	s;
 
 	i = 0;
+	s = 0;
 	while (args[++i])
 	{
-		if (!is_valid_identifier(args[i]))
-			ft_putendl_fd("minishell: unset: invalid identifier", 2);
+		if (unvalid_id("unset", args[i], args[i]))
+			s = 1;
 		else
 		{
-			j = -1;
-			len = ft_strlen(args[i]);
-			while ((*envp)[++j])
+			j = 0;
+			l = ft_strlen(args[i]);
+			while ((*env)[j])
 			{
-				if (ft_strncmp((*envp)[j], args[i], len) == 0
-					&& (*envp)[j][len] == '=')
-				{
-					remove_var(envp, j);
-					break ;
-				}
+				if (!ft_strncmp((*env)[j], args[i], l) && (*env)[j][l] == '=')
+					remove_var(env, j);
+				else
+					j++;
 			}
 		}
 	}
-	return (0);
+	return (s);
 }

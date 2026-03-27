@@ -55,32 +55,40 @@ static int	handle_out(t_redir *redir)
 	return (0);
 }
 
-static void	read_heredoc(int fd, char *delim)
+static void	read_heredoc(int fd, t_redir *redir, t_exec_params *params)
 {
 	char	*line;
+	char	*expanded;
 
 	while (1)
 	{
 		line = readline("> ");
-		if (!line || ft_strncmp(line, delim,
-				ft_strlen(delim) + 1) == 0)
+		if (!line || ft_strncmp(line, redir->filename,
+				ft_strlen(redir->filename) + 1) == 0)
 		{
 			free(line);
 			break ;
 		}
-		write(fd, line, ft_strlen(line));
+		if (!redir->quoted)
+		{
+			expanded = expand_heredoc_line(line, params);
+			write(fd, expanded, ft_strlen(expanded));
+			free(expanded);
+		}
+		else
+			write(fd, line, ft_strlen(line));
 		write(fd, "\n", 1);
 		free(line);
 	}
 }
 
-static int	handle_heredoc(t_redir *redir)
+static int	handle_heredoc(t_redir *redir, t_exec_params *params)
 {
 	int	fd[2];
 
 	if (pipe(fd) == -1)
 		return (1);
-	read_heredoc(fd[1], redir->filename);
+	read_heredoc(fd[1], redir, params);
 	close(fd[1]);
 	if (dup2(fd[0], STDIN_FILENO) == -1)
 		return (close(fd[0]), 1);
@@ -88,7 +96,7 @@ static int	handle_heredoc(t_redir *redir)
 	return (0);
 }
 
-int	handle_redirections(t_command *cmd)
+int	handle_redirections(t_command *cmd, t_exec_params *params)
 {
 	t_redir	*redir;
 
@@ -102,7 +110,7 @@ int	handle_redirections(t_command *cmd)
 		else if ((redir->type == REDIR_OUT || redir->type == REDIR_APPEND)
 			&& handle_out(redir))
 			return (1);
-		else if (redir->type == REDIR_HEREDOC && handle_heredoc(redir))
+		else if (redir->type == REDIR_HEREDOC && handle_heredoc(redir, params))
 			return (1);
 		redir = redir->next;
 	}

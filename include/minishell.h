@@ -82,6 +82,7 @@ typedef struct s_redir
 {
 	t_redir_type	type;
 	char			*filename;
+	int				quoted;
 	struct s_redir	*next;
 }	t_redir;
 
@@ -145,6 +146,7 @@ void		toggle_quotes(char c, bool *s_quote, bool *d_quote);
 char		*apply_expansion(char *res, char *var_val);
 bool		is_expandable(char *v, int i, bool sq);
 void		handle_status_quotes(char c, bool q[3], int *i);
+char		*expand_heredoc_line(char *line, t_exec_params *params);
 
 /*
  * Execution
@@ -157,7 +159,7 @@ void		handle_process_loop(t_command *cmd, char ***envp,
 int			is_builtin(char *cmd);
 int			execute_builtin(t_command *cmd, char ***envp, int *last_status);
 void		run_single_builtin(t_command *cmd, char ***envp, int *last_status);
-int			handle_redirections(t_command *cmd);
+int			handle_redirections(t_command *cmd, t_exec_params *params);
 void		wait_for_children(pid_t last_pid, int *last_status);
 void		child_process(t_command *cmd, t_exec_params *params);
 int			is_dir(char *path);
@@ -191,6 +193,7 @@ char		*get_env_value(char **envp, char *key);
 void		set_env(char ***envp, char *key, char *value);
 void		increment_shlvl(char ***envp);
 char		*get_var_value(char *name, char **envp, int last_status);
+void		remove_var(char ***envp, int j);
 
 /*
  * Signals

@@ -41,12 +41,18 @@ static int	handle_assignment(t_command *cmd, char ***envp, int *last_status)
 
 static void	handle_single_cmd(t_command *cmd, char ***envp, int *last_status)
 {
-	int	saved_stdout;
-	int	saved_stdin;
+	int				saved_stdout;
+	int				saved_stdin;
+	t_exec_params	params;
 
+	params.envp = envp;
+	params.last_status = last_status;
+	params.prev_fd = -1;
+	params.p_fd[0] = -1;
+	params.p_fd[1] = -1;
 	saved_stdout = dup(STDOUT_FILENO);
 	saved_stdin = dup(STDIN_FILENO);
-	*last_status = handle_redirections(cmd);
+	*last_status = handle_redirections(cmd, &params);
 	if (*last_status == 0)
 		run_single_builtin(cmd, envp, last_status);
 	dup2(saved_stdout, STDOUT_FILENO);

@@ -50,7 +50,7 @@ static char	*handle_abs_rel_path(t_command *cmd)
 	{
 		ft_putstr_fd("minishell: ", 2);
 		ft_putstr_fd(cmd->args[0], 2);
-		ft_putendl_fd(": is a directory", 2);
+		ft_putendl_fd(": Is a directory", 2);
 		exit(126);
 	}
 	if (access(cmd->args[0], X_OK) == -1)
@@ -98,7 +98,7 @@ void	child_process(t_command *cmd, t_exec_params *params)
 	}
 	if (params->p_fd[0] != -1)
 		close(params->p_fd[0]);
-	if (handle_redirections(cmd))
+	if (handle_redirections(cmd, params))
 		exit(1);
 	if (cmd->sub_cmd)
 	{

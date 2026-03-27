@@ -12,6 +12,18 @@
 
 #include "minishell.h"
 
+char	*get_var_value(char *name, char **envp, int last_status)
+{
+	char	*val;
+
+	if (ft_strncmp(name, "?", 2) == 0)
+		return (ft_itoa(last_status));
+	val = get_env_value(envp, name);
+	if (val)
+		return (ft_strdup(val));
+	return (ft_strdup(""));
+}
+
 static char	*get_var_name(char *val, int *i)
 {
 	int		start;
@@ -63,7 +75,7 @@ char	*expand_status(char *val, t_exec_params *params)
 	{
 		if ((val[i] == '\'' && !q[1]) || (val[i] == '"' && !q[0]))
 			handle_status_quotes(val[i], q, &i);
-		else if (is_expandable(val, i, q[0]))
+		else if (params && is_expandable(val, i, q[0]))
 			res = apply_expansion(res, handle_expansion(val, &i, params, q[1]));
 		else if (val[i] == '*' && !q[0] && !q[1])
 		{
@@ -75,5 +87,23 @@ char	*expand_status(char *val, t_exec_params *params)
 	}
 	if (res[0] == '\0' && !q[2])
 		return (free(res), ft_strdup("\1"));
+	return (res);
+}
+
+char	*expand_heredoc_line(char *line, t_exec_params *params)
+{
+	char	*res;
+	int		i;
+
+	res = ft_strdup("");
+	i = 0;
+	while (line && line[i])
+	{
+		if (is_expandable(line, i, false))
+			res = apply_expansion(res, handle_expansion(line, &i, params,
+						true));
+		else
+			res = append_char(res, line[i++]);
+	}
 	return (res);
 }

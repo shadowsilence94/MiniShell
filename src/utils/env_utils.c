@@ -50,54 +50,52 @@ char	*get_env_value(char **envp, char *key)
 	return (NULL);
 }
 
-static char	*create_env_str(char *key, char *value)
+static int	update_env(char **env, char *key, char *val, int l)
 {
-	char	*tmp;
-	char	*res;
+	int	i;
 
-	tmp = ft_strjoin(key, "=");
-	res = ft_strjoin(tmp, value);
-	free(tmp);
-	return (res);
+	i = -1;
+	while (env[++i])
+	{
+		if (!ft_strncmp(env[i], key, l) && env[i][l] == '=')
+		{
+			free(env[i]);
+			env[i] = val;
+			return (1);
+		}
+	}
+	return (0);
 }
 
 void	set_env(char ***envp, char *key, char *value)
 {
 	int		i;
-	int		key_len;
-	char	**new_env;
-	char	*new_str;
+	char	**new;
+	char	*s;
+	char	*t;
 
+	t = ft_strjoin(key, "=");
+	s = ft_strjoin(t, value);
+	free(t);
+	if (update_env(*envp, key, s, ft_strlen(key)))
+		return ;
 	i = 0;
-	key_len = ft_strlen(key);
-	new_str = create_env_str(key, value);
 	while ((*envp)[i])
-	{
-		if (ft_strncmp((*envp)[i], key, key_len) == 0
-			&& (*envp)[i][key_len] == '=')
-		{
-			free((*envp)[i]);
-			(*envp)[i] = new_str;
-			return ;
-		}
 		i++;
-	}
-	new_env = (char **)malloc(sizeof(char *) * (i + 2));
-	ft_memcpy(new_env, *envp, sizeof(char *) * i);
-	new_env[i] = new_str;
-	new_env[i + 1] = NULL;
+	new = (char **)malloc(sizeof(char *) * (i + 2));
+	ft_memcpy(new, *envp, sizeof(char *) * i);
+	new[i] = s;
+	new[i + 1] = NULL;
 	free(*envp);
-	*envp = new_env;
+	*envp = new;
 }
 
-char	*get_var_value(char *name, char **envp, int last_status)
+void	remove_var(char ***envp, int j)
 {
-	char	*val;
-
-	if (ft_strncmp(name, "?", 2) == 0)
-		return (ft_itoa(last_status));
-	val = get_env_value(envp, name);
-	if (val)
-		return (ft_strdup(val));
-	return (ft_strdup(""));
+	free((*envp)[j]);
+	while ((*envp)[j])
+	{
+		(*envp)[j] = (*envp)[j + 1];
+		j++;
+	}
 }

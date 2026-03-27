@@ -19,8 +19,9 @@ static void	process_char(char *val, int *i, char **res, t_exec_params *p)
 	ft_memset(st, 0, 3 * sizeof(bool));
 	st[0] = p->sq;
 	st[1] = p->dq;
-	if (val[*i] == '\\' && p->dq && (val[*i + 1] == '"'
-			|| val[*i + 1] == '$' || val[*i + 1] == '\\'))
+	if (val[*i] == '\\' && !p->sq && ((p->dq && (val[*i + 1] == '"'
+					|| val[*i + 1] == '$' || val[*i + 1] == '\\'))
+			|| (!p->dq && val[*i + 1])))
 		*res = append_char(*res, val[++(*i)]);
 	else if ((val[*i] == '\'' && !p->dq) || (val[*i] == '"' && !p->sq))
 	{

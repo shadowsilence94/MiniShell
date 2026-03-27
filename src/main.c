@@ -14,6 +14,10 @@
 
 volatile sig_atomic_t	g_signal_received;
 
+static void	process_input(char *line, char ***envp, int *last_status);
+static void	init_shell(char ***env_vars, char **envp);
+static void	shell_loop(char ***env_vars, int *last_status);
+
 static void	init_shell(char ***env_vars, char **envp)
 {
 	*env_vars = copy_env(envp);
@@ -47,7 +51,7 @@ static void	shell_loop(char ***env_vars, int *last_status)
 	}
 }
 
-void	process_input(char *line, char ***envp, int *last_status)
+static void	process_input(char *line, char ***envp, int *last_status)
 {
 	t_command	*cmd_list;
 

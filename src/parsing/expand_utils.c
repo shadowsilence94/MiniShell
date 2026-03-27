@@ -12,26 +12,36 @@
 
 #include "minishell.h"
 
-static void	process_char(char *val, int *i, char **res, t_exec_params *p)
+static int	check_special(char *val, int *i, char **res, t_exec_params *p)
 {
 	bool	st[3];
 
-	ft_memset(st, 0, 3 * sizeof(bool));
-	st[0] = p->sq;
-	st[1] = p->dq;
 	if (val[*i] == '\\' && !p->sq && ((p->dq && (val[*i + 1] == '"'
 					|| val[*i + 1] == '$' || val[*i + 1] == '\\'))
 			|| (!p->dq && val[*i + 1])))
-		*res = append_char(*res, val[++(*i)]);
-	else if ((val[*i] == '\'' && !p->dq) || (val[*i] == '"' && !p->sq))
 	{
+		*res = append_char(*res, val[++(*i)]);
+		(*i)++;
+		return (1);
+	}
+	if ((val[*i] == '\'' && !p->dq) || (val[*i] == '"' && !p->sq))
+	{
+		st[0] = p->sq;
+		st[1] = p->dq;
 		handle_status_quotes(val[*i], st, i);
 		p->sq = st[0];
 		p->dq = st[1];
 		p->any_q = true;
-		return ;
+		return (1);
 	}
-	else if (p && is_expandable(val, *i, p->sq))
+	return (0);
+}
+
+static void	process_char(char *val, int *i, char **res, t_exec_params *p)
+{
+	if (check_special(val, i, res, p))
+		return ;
+	if (p && is_expandable(val, *i, p->sq))
 	{
 		*res = apply_expansion(*res, handle_expansion(val, i, p, p->dq));
 		return ;

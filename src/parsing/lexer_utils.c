@@ -53,7 +53,8 @@ static int	last_is_redir(t_token *head)
 	return (tmp->type >= TOKEN_REDIRECT_IN && tmp->type <= TOKEN_HEREDOC);
 }
 
-static void	add_word_token(t_token **head, char *word, char *expanded, bool quoted)
+static void	add_word_token(t_token **head, char *word,
+				char *expanded, bool quoted)
 {
 	if (expanded && last_is_redir(*head))
 	{

@@ -65,7 +65,7 @@ static t_token	*matches_to_tokens(char **matches, int count)
 	sort_strings(matches, count);
 	i = -1;
 	while (++i < count)
-		append_token(&head, new_token(matches[i], TOKEN_WORD));
+		append_token(&head, new_token(matches[i], TOKEN_WORD, false));
 	return (head);
 }
 
@@ -74,7 +74,7 @@ static t_token	*get_final_tokens(char **matches, int count, char *pattern)
 	if (count == 0)
 	{
 		clean_marker(pattern);
-		return (new_token(ft_strdup(pattern), TOKEN_WORD));
+		return (new_token(ft_strdup(pattern), TOKEN_WORD, false));
 	}
 	return (matches_to_tokens(matches, count));
 }

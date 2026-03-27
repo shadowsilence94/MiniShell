@@ -59,10 +59,7 @@ void	run_single_builtin(t_command *cmd, char ***envp, int *last_status)
 
 	saved_stdin = dup(STDIN_FILENO);
 	saved_stdout = dup(STDOUT_FILENO);
-	if (handle_redirections(cmd) == 0)
-		*last_status = execute_builtin(cmd, envp, last_status);
-	else
-		*last_status = 1;
+	*last_status = execute_builtin(cmd, envp, last_status);
 	dup2(saved_stdin, STDIN_FILENO);
 	dup2(saved_stdout, STDOUT_FILENO);
 	close(saved_stdin);

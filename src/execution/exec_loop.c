@@ -40,6 +40,7 @@ void	handle_process_loop(t_command *cmd, char ***envp, int *last_status)
 	p.envp = envp;
 	p.last_status = last_status;
 	p.prev_fd = -1;
+	signals_ign();
 	last_pid = -1;
 	while (cmd)
 	{
@@ -56,4 +57,5 @@ void	handle_process_loop(t_command *cmd, char ***envp, int *last_status)
 	if (p.prev_fd != -1)
 		close(p.prev_fd);
 	wait_for_children(last_pid, last_status);
+	setup_signals();
 }

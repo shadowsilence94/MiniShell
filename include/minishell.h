@@ -214,5 +214,7 @@ void			remove_var(char ***envp, int j);
  * Signals
  */
 void			setup_signals(void);
+void			signals_ign(void);
+void			signals_default(void);
 
 #endif

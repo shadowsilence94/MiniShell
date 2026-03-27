@@ -25,7 +25,13 @@ void	wait_for_children(pid_t last_pid, int *last_status)
 			if (WIFEXITED(status))
 				*last_status = WEXITSTATUS(status);
 			else if (WIFSIGNALED(status))
+			{
 				*last_status = 128 + WTERMSIG(status);
+				if (*last_status == 131)
+					ft_putstr_fd("Quit (core dumped)\n", 2);
+				else if (*last_status == 130)
+					write(2, "\n", 1);
+			}
 		}
 		pid = wait(&status);
 	}
@@ -86,6 +92,7 @@ static void	run_command(t_command *cmd, char ***envp)
 
 void	child_process(t_command *cmd, t_exec_params *params)
 {
+	signals_default();
 	if (params->prev_fd != -1)
 	{
 		dup2(params->prev_fd, STDIN_FILENO);

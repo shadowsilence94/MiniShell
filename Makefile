@@ -13,16 +13,14 @@ SRC_PARSING = lexer.c lexer_utils.c parser.c parser_utils.c parser_redir.c \
 SRC_EXEC    = executor.c executor_main.c builtin_executor.c exec_utils.c \
               exec_loop.c redirection.c redirection_utils.c path_utils.c
 SRC_BUILTIN = builtins.c builtins_utils.c env_builtins.c
-SRC_UTILS   = env_utils.c compat.c
+SRC_UTILS   = env_utils.c
 SRC_ROOT    = main.c signals.c
 
 SRCS = $(addprefix $(SRC_DIR)/parsing/, $(SRC_PARSING)) \
        $(addprefix $(SRC_DIR)/execution/, $(SRC_EXEC)) \
        $(addprefix $(SRC_DIR)/builtins/, $(SRC_BUILTIN)) \
        $(addprefix $(SRC_DIR)/utils/, $(SRC_UTILS)) \
-       $(SRCS_ROOT)
-
-SRCS_ROOT = $(addprefix $(SRC_DIR)/, $(SRC_ROOT))
+       $(addprefix $(SRC_DIR)/, $(SRC_ROOT))
 
 OBJS = $(SRCS:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)
 

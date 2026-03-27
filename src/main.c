@@ -19,7 +19,6 @@ static void	init_shell(char ***env_vars, char **envp)
 	*env_vars = copy_env(envp);
 	increment_shlvl(env_vars);
 	setup_signals();
-	rl_bind_key('\t', rl_complete);
 }
 
 void	process_input(char *line, char ***envp, int *last_status)
@@ -59,7 +58,7 @@ int	main(int argc, char **argv, char **envp)
 				continue ;
 			}
 			if (isatty(STDIN_FILENO))
-				printf("exit\n");
+				ft_putendl_fd("exit", 1);
 			break ;
 		}
 		if (g_signal_received)

@@ -7,6 +7,19 @@ OBJ_DIR     = obj
 SRC_DIR     = src
 DEPS        = include/minishell.h
 
+# MacOS readline paths (for Apple Silicon and Intel Macs via Homebrew)
+READLINE_LIB = -lreadline
+READLINE_INC = 
+ifeq ($(shell uname), Darwin)
+    ifneq ($(wildcard /opt/homebrew/opt/readline/lib),)
+        READLINE_LIB = -L/opt/homebrew/opt/readline/lib -lreadline
+        READLINE_INC = -I/opt/homebrew/opt/readline/include
+    else ifneq ($(wildcard /usr/local/opt/readline/lib),)
+        READLINE_LIB = -L/usr/local/opt/readline/lib -lreadline
+        READLINE_INC = -I/usr/local/opt/readline/include
+    endif
+endif
+
 SRC_PARSING = lexer.c lexer_utils.c parser.c parser_utils.c parser_redir.c \
               token_utils.c expand_utils.c expand_vars.c expand_helpers.c \
               wildcards.c wildcard_helpers.c wildcards_exec.c
@@ -27,14 +40,14 @@ OBJS = $(SRCS:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)
 all: $(NAME)
 
 $(NAME): $(LIBFT) $(OBJS)
-	$(CC) $(CFLAGS) $(OBJS) -L$(LIBFT_DIR) -lft -lreadline -o $(NAME)
+	$(CC) $(CFLAGS) $(OBJS) -L$(LIBFT_DIR) -lft $(READLINE_LIB) -o $(NAME)
 
 $(LIBFT):
 	@make -C $(LIBFT_DIR)
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c $(DEPS)
 	@mkdir -p $(dir $@)
-	$(CC) $(CFLAGS) -c $< -o $@
+	$(CC) $(CFLAGS) $(READLINE_INC) -c $< -o $@
 
 clean:
 	rm -rf $(OBJ_DIR)

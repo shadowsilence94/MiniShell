@@ -32,7 +32,10 @@ static void	process_char(char *val, int *i, char **res, t_exec_params *p)
 		return ;
 	}
 	else if (p && is_expandable(val, *i, p->sq))
+	{
 		*res = apply_expansion(*res, handle_expansion(val, i, p, p->dq));
+		return ;
+	}
 	else if (val[*i] == '*' && !p->sq && !p->dq)
 		*res = append_char(*res, '\2');
 	else
